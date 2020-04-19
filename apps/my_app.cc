@@ -3,20 +3,54 @@
 #include "my_app.h"
 
 #include <cinder/app/App.h>
+#include <cinder/Font.h>
+#include <cinder/Text.h>
+#include <cinder/Vector.h>
+#include <cinder/gl/draw.h>
+#include <cinder/gl/gl.h>
 
 
-namespace myapp {
+namespace thugapp {
 
 using cinder::app::KeyEvent;
+using cinder::Color;
+using cinder::ColorA;
+using cinder::Rectf;
 
-MyApp::MyApp() { }
+THUGApp::THUGApp()
+    : terrain{},
+    pixel_size_{1} {}
 
-void MyApp::setup() { }
+void THUGApp::setup() {
+    terrain.GenerateTerrain();
+    cinder::gl::enableDepthWrite();
+    cinder::gl::enableDepthRead();
+}
 
-void MyApp::update() { }
+void THUGApp::update() {
 
-void MyApp::draw() { }
+}
 
-void MyApp::keyDown(KeyEvent event) { }
+void THUGApp::draw() {
+    cinder::gl::enableAlphaBlending();
+    cinder::gl::clear();
+    DrawTerrain();
+}
 
-}  // namespace myapp
+void THUGApp::keyDown(KeyEvent event) { }
+
+void THUGApp::DrawTerrain() {
+    for (int x = 0; x < mylibrary::kMapSize; x++) {
+        for (int y = 0; y < mylibrary::kMapSize; y++) {
+            float value = terrain.GetValue(x, y);
+            cinder::gl::color(0, 0, value);
+            cinder::gl::drawSolidRect(Rectf(pixel_size_ * x,
+                    pixel_size_ * y,
+                    pixel_size_*x + pixel_size_,
+                    pixel_size_*y + pixel_size_));
+        }
+    }
+
+}
+
+}  // namespace thugapp

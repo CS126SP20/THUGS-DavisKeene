@@ -4,19 +4,31 @@
 #define FINALPROJECT_APPS_MYAPP_H_
 
 #include <cinder/app/App.h>
+#include <mylibrary/Terrain.h>
+#include <cinder/gl/gl.h>
 
 
-namespace myapp {
+namespace thugapp {
 
-class MyApp : public cinder::app::App {
+class THUGApp : public cinder::app::App {
  public:
-  MyApp();
+  THUGApp();
   void setup() override;
   void update() override;
   void draw() override;
   void keyDown(cinder::app::KeyEvent) override;
+
+private:
+    void DrawTerrain();
+    void DrawPlayer();
+    void ResetGame();
+
+
+private:
+    mylibrary::Terrain terrain;
+    const size_t pixel_size_;
 };
 
-}  // namespace myapp
+}  // namespace thugapp
 
 #endif  // FINALPROJECT_APPS_MYAPP_H_
