@@ -43,7 +43,12 @@ void THUGApp::DrawTerrain() {
     for (int x = 0; x < mylibrary::kMapSize; x++) {
         for (int y = 0; y < mylibrary::kMapSize; y++) {
             float value = terrain.GetValue(x, y);
-            cinder::gl::color(0, 0, value);
+            // Change color based on value, to make mountains and rivers and stuff
+            if (value > .150) {
+                cinder::gl::color(0, 0, 1 - value);
+            } else {
+                cinder::gl::color(80/255.0, (1 - value)*(1/1.20), 0);
+            }
             cinder::gl::drawSolidRect(Rectf(pixel_size_ * x,
                     pixel_size_ * y,
                     pixel_size_*x + pixel_size_,
