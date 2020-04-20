@@ -16,14 +16,14 @@ TEST_CASE("Random sanity test", "[random]") {
 }
 
 TEST_CASE("Terrain does generate", "[terrain]") {
-    mylibrary::Terrain terrain;
+    thuglib::Terrain terrain;
     terrain.GenerateTerrain();
     terrain.PrintTerrain();
     REQUIRE(true);
 }
 
 TEST_CASE("Get Value from Terrain", "[terrain]") {
-    mylibrary::Terrain terrain;
+    thuglib::Terrain terrain;
     terrain.GenerateTerrain();
     std::cout << "-----" <<std::endl;
     std::cout << terrain.GetValue(0, 0);

@@ -3,9 +3,9 @@
 #define FINALPROJECT_MYLIBRARY_EXAMPLE_H_
 
 
-namespace mylibrary {
+namespace thuglib {
 
-}  // namespace mylibrary
+}  // namespace thuglib
 
 
 #endif // FINALPROJECT_MYLIBRARY_EXAMPLE_H_

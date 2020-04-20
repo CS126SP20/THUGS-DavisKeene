@@ -7,22 +7,23 @@
 
 #include "FastNoise.h"
 
-namespace mylibrary {
+namespace thuglib {
 
     const int kMapSize = 800;
     const int kSpawnX = 500;
     const int kSpawnY = 500;
-    const int kPixelSize = 10;
+    const int kPixelSize = 25;
     const int kNumPixels = kMapSize / kPixelSize;
 
     class Terrain {
-    public:
+      public:
         Terrain();
         float GetValue(int x, int y);
         void GenerateTerrain();
+        void GenerateTerrain(int x, int y);
         void PrintTerrain();
 
-    private:
+      private:
         FastNoise noise;
         float map[kMapSize / kPixelSize][kMapSize / kPixelSize] = { };
     };

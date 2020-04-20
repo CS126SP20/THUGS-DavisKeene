@@ -2,6 +2,6 @@
 
 #include <mylibrary/example.h>
 
-namespace mylibrary {
+namespace thuglib {
 
-}  // namespace mylibrary
+}  // namespace thuglib

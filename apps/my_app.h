@@ -7,6 +7,7 @@
 #include <cinder/Surface.h>
 #include <mylibrary/Terrain.h>
 #include <cinder/gl/gl.h>
+#include <mylibrary/Player.h>
 
 
 namespace thugapp {
@@ -27,12 +28,13 @@ private:
 
 
 private:
-    mylibrary::Terrain terrain;
+    thuglib::Terrain terrain;
     const size_t pixel_size_;
     const size_t entity_block_size_;
     cinder::vec2 player_location_;
     cinder::Surface8u terrainSurface;
     bool new_chunk_;
+    thuglib::Player steve_;
 };
 
 }  // namespace thugapp
