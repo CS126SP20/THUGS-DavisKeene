@@ -8,9 +8,9 @@ namespace mylibrary {
 
     void Terrain::GenerateTerrain() {
         noise.SetNoiseType(FastNoise::ValueFractal);
-        for (int i = 0; i < kMapSize; i++) {
-            for (int j = 0; j < kMapSize; j++) {
-                map[i][j] = noise.GetNoise(i,j);
+        for (int i = 0; i < kMapSize / kPixelSize; i++) {
+            for (int j = 0; j < kMapSize / kPixelSize; j++) {
+                map[i][j] = noise.GetNoise(i + kSpawnX, j + kSpawnY);
             }
         }
     }

@@ -10,6 +10,10 @@
 namespace mylibrary {
 
     const int kMapSize = 800;
+    const int kSpawnX = 500;
+    const int kSpawnY = 500;
+    const int kPixelSize = 10;
+    const int kNumPixels = kMapSize / kPixelSize;
 
     class Terrain {
     public:
@@ -20,7 +24,7 @@ namespace mylibrary {
 
     private:
         FastNoise noise;
-        float map[kMapSize][kMapSize] = { };
+        float map[kMapSize / kPixelSize][kMapSize / kPixelSize] = { };
     };
 } // namespace terrain
 

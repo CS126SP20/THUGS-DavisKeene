@@ -21,3 +21,11 @@ TEST_CASE("Terrain does generate", "[terrain]") {
     terrain.PrintTerrain();
     REQUIRE(true);
 }
+
+TEST_CASE("Get Value from Terrain", "[terrain]") {
+    mylibrary::Terrain terrain;
+    terrain.GenerateTerrain();
+    std::cout << "-----" <<std::endl;
+    std::cout << terrain.GetValue(0, 0);
+    REQUIRE(true);
+}
