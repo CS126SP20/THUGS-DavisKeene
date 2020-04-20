@@ -22,3 +22,11 @@
     - Having trouble with getting a character to be drawn on screen. Calling the draw function on the image of a player, but they're not
     rendering on screen. Will consult office hours tomorrow and ask on piazza.
     - Rendering was taking quite a while, so I had to scale back on the detail in order to make sure the framerate was optimal.
+    
+- <i> 4/20/20 </i>
+
+  - Made player able to walk around the terrain!
+  - Made a player class, with methods to get and update player location based on KeyEvent.
+  - [X] Figured out bug when rendering player: needed to call DrawPlayer() first.
+  - [ ] Figured out how to optimize framerate when generating terrain
+  - [ ] Figured out how to load chunk when player walks off screen.
