@@ -7,37 +7,30 @@
 namespace thuglib {
 
     void Terrain::GenerateTerrain() {
-        // Set the noise type and seed
-        noise.SetNoiseType(FastNoise::ValueFractal);
-        noise.SetSeed(1337);
-        noise.SetFrequency(.05f);
         for (int i = 0; i < kNumPixels; i++) {
             for (int j = 0; j < kNumPixels; j++) {
                 // Without parameters, construct the terrain from spawn
-                map[i][j] = noise.GetNoise(i + kSpawnX, j + kSpawnY);
+                map_[i][j] = noise_.GetNoise(i + kSpawnX, j + kSpawnY);
             }
         }
     }
 
     void Terrain::GenerateTerrain(const cinder::vec2& bounds) {
-        noise.SetNoiseType(FastNoise::ValueFractal);
-        noise.SetSeed(1337);
-        noise.SetFrequency(.05f);
         // Set values of array back to zero
-        memset(map, 0.0, sizeof(map[0][0]) * kNumPixels * kNumPixels);
+        memset(map_, 0.0, sizeof(map_[0][0]) * kNumPixels * kNumPixels);
         int x = (int) bounds.x;
         int y = (int) bounds.y;
         for (int i = 0; i < kNumPixels; i++) {
             for (int j = 0; j < kNumPixels; j++) {
-                // Construct the values of the map from our chunk bounds
-                map[i][j] = noise.GetNoise(i + (x * kNumPixels), j + (kNumPixels * y));
+                // Construct the values of the map_ from our chunk bounds
+                map_[i][j] = noise_.GetNoise(i + (x * kNumPixels), j + (kNumPixels * y));
             }
         }
     }
 
     float Terrain::GetValue(int x, int y) {
-        return map[x][y];
-        // return noise.GetNoise(x, y);
+        return map_[x][y];
+        // return noise_.GetNoise(x, y);
     }
 
     void Terrain::PrintTerrain() {
@@ -60,6 +53,25 @@ namespace thuglib {
         return {boundX, boundY};
     }
 
-    Terrain::Terrain() = default;
+    Terrain::Terrain(FastNoise::NoiseType type, int seed, float frequency) {
+        seed_ = seed;
+        frequency_ = frequency;
+        noise_.SetNoiseType(type);
+        noise_.SetFrequency(frequency);
+    }
+
+    Terrain::Terrain() {
+        noise_.SetNoiseType(FastNoise::ValueFractal);
+        noise_.SetSeed(1337);
+        noise_.SetFrequency(.05f);
+    }
+
+    int Terrain::GetSeed() {
+        return seed_;
+    }
+
+    float Terrain::GetFrequency() {
+        return frequency_;
+    }
 
 }

@@ -20,10 +20,13 @@ namespace thuglib {
         cinder::vec2 location;
         // Player's health
         float health;
-        // How fast the player traverses the map, in pixels / second
+        // How fast the player traverses the map_, in pixels / second
         int player_speed_;
       public:
+        // Gets absolute player position
         cinder::vec2 GetLocation();
+        // Gets relative player position (on screen)
+        cinder::vec2 GetRelativePosition();
         float GetHealth();
         // Speed increase / decrease
         void SpeedUp();

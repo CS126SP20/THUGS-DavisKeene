@@ -46,6 +46,12 @@ namespace thuglib {
          }
      }
 
+     cinder::vec2 Player::GetRelativePosition() {
+         int relative_x = ((int) location.x % kMapSize) / kPixelSize;
+         int relative_y = ((int) location.y % kMapSize) / kPixelSize;
+         return {relative_x, relative_y};
+     }
+
      Player::Player() {
          player_speed_ = 5;
          health = 100.0;

@@ -24,6 +24,8 @@ class THUGApp : public cinder::app::App {
 private:
     void DrawTerrain();
     void DrawPlayer();
+    void DrawGameStats();
+    void toggleDrawGameStats();
     void ResetGame();
 
 
@@ -35,6 +37,7 @@ private:
     cinder::Surface8u terrainSurface;
     bool new_chunk_;
     thuglib::Player player_;
+    bool draw_stats_;
 };
 
 }  // namespace thugapp
