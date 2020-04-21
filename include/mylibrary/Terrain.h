@@ -13,9 +13,9 @@ namespace thuglib {
     // Size of the map, window is kMapSize x kMapSize pixels
     const int kMapSize = 800;
     // Spawn X coordinate
-    const int kSpawnX = 25000;
+    const int kSpawnX = 16000;
     // Spawn Y Coordinate
-    const int kSpawnY = 25000;
+    const int kSpawnY = 16000;
     // Size of the pixels we want to render on screen
     const int kPixelSize = 16;
     // Number of pixels of our map, there are kNumPixels x kNumPixels
