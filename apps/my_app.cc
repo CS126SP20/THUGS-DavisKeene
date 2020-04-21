@@ -46,7 +46,6 @@ void THUGApp::draw() {
 }
 
 void THUGApp::keyDown(KeyEvent event) {
-    std::cout << event.getCode() << std::endl;
     steve_.UpdateLocation(event);
 }
 

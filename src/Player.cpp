@@ -44,7 +44,6 @@ namespace thuglib {
                  break;
              }
          }
-         std::cout << location << std::endl;
      }
 
      Player::Player() {

@@ -10,6 +10,7 @@ namespace thuglib {
         // Set the noise type and seed
         noise.SetNoiseType(FastNoise::ValueFractal);
         noise.SetSeed(1337);
+        noise.SetFrequency(.05f);
         for (int i = 0; i < kNumPixels; i++) {
             for (int j = 0; j < kNumPixels; j++) {
                 // Without parameters, construct the terrain from spawn
@@ -21,6 +22,7 @@ namespace thuglib {
     void Terrain::GenerateTerrain(const cinder::vec2& bounds) {
         noise.SetNoiseType(FastNoise::ValueFractal);
         noise.SetSeed(1337);
+        noise.SetFrequency(.05f);
         // Set values of array back to zero
         memset(map, 0.0, sizeof(map[0][0]) * kNumPixels * kNumPixels);
         int x = (int) bounds.x;
