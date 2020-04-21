@@ -50,6 +50,6 @@ namespace thuglib {
      Player::Player() {
          player_speed_ = 5;
          health = 100.0;
-         location = {thuglib::kMapSize/2.0, thuglib::kMapSize/2.0};
+         location = {thuglib::kSpawnX, thuglib::kSpawnY};
      }
 }

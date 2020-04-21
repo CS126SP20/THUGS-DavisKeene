@@ -29,4 +29,4 @@
   - Made a player class, with methods to get and update player location based on KeyEvent.
   - [X] Figured out bug when rendering player: needed to call DrawPlayer() first.
   - [ ] Figured out how to optimize framerate when generating terrain
-  - [ ] Figured out how to load chunk when player walks off screen.
+  - [X] Figured out how to load chunk when player walks off screen.

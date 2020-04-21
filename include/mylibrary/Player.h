@@ -13,15 +13,21 @@ namespace thuglib {
     class Player {
 
       private:
+        // Player's location
         cinder::vec2 location;
+        // Player's health
         float health;
+        // How fast the player traverses the map, in pixels / second
         int player_speed_;
       public:
         cinder::vec2 GetLocation();
         float GetHealth();
+        // Speed increase / decrease
         void SpeedUp();
         void SlowDown();
+        // Update player location based on what key was pressed
         void UpdateLocation(const cinder::app::KeyEvent& event);
+        // Default constructor
         Player();
     };
 }

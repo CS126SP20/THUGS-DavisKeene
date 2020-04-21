@@ -51,32 +51,38 @@ void THUGApp::keyDown(KeyEvent event) {
 }
 
 void THUGApp::DrawTerrain() {
-    for (int x = 0; x < thuglib::kNumPixels; x++) {
-        for (int y = 0; y < thuglib::kNumPixels; y++) {
-            float value = terrain.GetValue(x, y);
+    cinder::vec2 bounds = terrain.GetChunkBounds(steve_.GetLocation());
+    terrain.GenerateTerrain(bounds);
+
+    int xstart = (int) bounds.x * thuglib::kNumPixels;
+    int ystart = (int) bounds.y * thuglib::kNumPixels;
+    int xend = thuglib::kNumPixels * (1 + (int) bounds.x);
+    int yend = thuglib::kNumPixels * (1 + (int) bounds.y);
+
+    for (int x = xstart; x < xend; x++) {
+        for (int y = ystart; y < yend; y++) {
+            float value = terrain.GetValue((x - xstart), (y - ystart));
             // Change color based on value, to make mountains and rivers and stuff
             if (value > .150) {
                 cinder::gl::color(0, 0, 1 - value);
             } else {
                 cinder::gl::color(80/255.0, (1 - value)*(1/1.20), 0);
             }
-            cinder::gl::drawSolidRect(Rectf(pixel_size_ * x,
-                    pixel_size_ * y,
-                    pixel_size_*x + pixel_size_,
-                    pixel_size_*y + pixel_size_));
+            cinder::gl::drawSolidRect(Rectf(pixel_size_ * (x - xstart),
+                    pixel_size_ * (y - ystart),
+                    pixel_size_* (x - xstart) + pixel_size_,
+                    pixel_size_* (y - ystart) + pixel_size_));
         }
     }
-
 }
 
 void THUGApp::DrawPlayer() {
-    cinder::vec2 center = steve_.GetLocation();
-//    auto player_image_ref = cinder::loadImage(cinder::app::loadAsset("man.png"));
-//    player_img = cinder::gl::Texture2d::create(player_image_ref);
-//    cinder::gl::draw(player_img, Rectf(center.x, center.y, center.x + 50, center.y + 50));
+    // Get player location
+    cinder::vec2 location = steve_.GetLocation();
     cinder::gl::color(Color::white());
-    cinder::gl::drawSolidRect(Rectf(center.x, center.y,
-            center.x + pixel_size_, center.y + pixel_size_));
+    // Render player location based on window coordinates, so we have to use %
+    cinder::gl::drawSolidRect(Rectf( (int) location.x % thuglib::kMapSize, (int) location.y % thuglib::kMapSize,
+                                     ((int) location.x % thuglib::kMapSize) + 4*pixel_size_, ((int) location.y % thuglib::kMapSize) + 4*pixel_size_));
 }
 
 }  // namespace thugapp
