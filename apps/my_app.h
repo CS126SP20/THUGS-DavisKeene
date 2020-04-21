@@ -35,6 +35,7 @@ private:
     cinder::Surface8u terrainSurface;
     bool new_chunk_;
     thuglib::Player steve_;
+    bool draw_background_;
 };
 
 }  // namespace thugapp

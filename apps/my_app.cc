@@ -65,6 +65,8 @@ void THUGApp::DrawTerrain() {
             // Change color based on value, to make mountains and rivers and stuff
             if (value > .150) {
                 cinder::gl::color(0, 0, 1 - value);
+            } else if (value < .150 && value > .065) {
+                cinder::gl::color(Color((1 - value) * (242/255.0), (1 - value) * 209/255.0, (1 - value) * 107/255.0));
             } else {
                 cinder::gl::color(80/255.0, (1 - value)*(1/1.20), 0);
             }

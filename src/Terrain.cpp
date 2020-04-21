@@ -8,7 +8,7 @@ namespace thuglib {
 
     void Terrain::GenerateTerrain() {
         // Set the noise type and seed
-        noise.SetNoiseType(FastNoise::Value);
+        noise.SetNoiseType(FastNoise::ValueFractal);
         noise.SetSeed(1337);
         for (int i = 0; i < kNumPixels; i++) {
             for (int j = 0; j < kNumPixels; j++) {
@@ -19,7 +19,7 @@ namespace thuglib {
     }
 
     void Terrain::GenerateTerrain(const cinder::vec2& bounds) {
-        noise.SetNoiseType(FastNoise::Value);
+        noise.SetNoiseType(FastNoise::ValueFractal);
         noise.SetSeed(1337);
         // Set values of array back to zero
         memset(map, 0.0, sizeof(map[0][0]) * kNumPixels * kNumPixels);
