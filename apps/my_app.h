@@ -34,8 +34,7 @@ private:
     cinder::vec2 player_location_;
     cinder::Surface8u terrainSurface;
     bool new_chunk_;
-    thuglib::Player steve_;
-    bool draw_background_;
+    thuglib::Player player_;
 };
 
 }  // namespace thugapp

@@ -17,7 +17,7 @@ namespace thuglib {
     // Spawn Y Coordinate
     const int kSpawnY = 25000;
     // Size of the pixels we want to render on screen
-    const int kPixelSize = 20;
+    const int kPixelSize = 16;
     // Number of pixels of our map, there are kNumPixels x kNumPixels
     // total pixels on the screen.
     const int kNumPixels = kMapSize / kPixelSize;

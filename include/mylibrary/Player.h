@@ -10,6 +10,9 @@
 
 namespace thuglib {
 
+    // Scale factor of how large the player is going to be
+    const int kPlayerSize = 2;
+
     class Player {
 
       private:

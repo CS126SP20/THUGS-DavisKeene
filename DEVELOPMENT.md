@@ -16,7 +16,7 @@
   - TODO:
     - Further experiment with constants for terrain generation. [X]
     - Experiment with different types of noise for the best terrain. [X]
-    - Add a character into the game that can "walk" around on the terrain. []
+    - Add a character into the game that can "walk" around on the terrain. [X]
     
   - Roadblocks
     - Having trouble with getting a character to be drawn on screen. Calling the draw function on the image of a player, but they're not
@@ -28,5 +28,11 @@
   - Made player able to walk around the terrain!
   - Made a player class, with methods to get and update player location based on KeyEvent.
   - [X] Figured out bug when rendering player: needed to call DrawPlayer() first.
-  - [ ] Figured out how to optimize framerate when generating terrain
+  - [X] Figured out how to optimize framerate when generating terrain
+    - BREAKTHROUGH 4/21/20 1:12AM
+      - Figured out how to change the frequency of the noise by reading the lib's documentation.
+      - From this, I figured I can increase the frequency and decrease the number of pixels by the same scale factor to get
+      semi-detailed terrains with only a fifth of the actual pixels.
+      - This strategy ended up working super well! Game framerate is playable, although I'll experiment with a few other settings, and the terrains are increasingly fun to 
+      walk through!
   - [X] Figured out how to load chunk when player walks off screen.

@@ -21,12 +21,12 @@ using cinder::gl::Texture;
 
 THUGApp::THUGApp()
     : terrain{},
-    pixel_size_{thuglib::kPixelSize},
-    entity_block_size_{10},
-    player_location_{thuglib::kSpawnX, thuglib::kSpawnY},
-    terrainSurface(800, 800, cinder::SurfaceChannelOrder::RGBA),
-    new_chunk_{true},
-    steve_{} {}
+      pixel_size_{thuglib::kPixelSize},
+      entity_block_size_{10},
+      player_location_{thuglib::kSpawnX, thuglib::kSpawnY},
+      terrainSurface(800, 800, cinder::SurfaceChannelOrder::RGBA),
+      new_chunk_{true},
+      player_{} {}
 
 void THUGApp::setup() {
     terrain.GenerateTerrain();
@@ -46,11 +46,11 @@ void THUGApp::draw() {
 }
 
 void THUGApp::keyDown(KeyEvent event) {
-    steve_.UpdateLocation(event);
+    player_.UpdateLocation(event);
 }
 
 void THUGApp::DrawTerrain() {
-    cinder::vec2 bounds = terrain.GetChunkBounds(steve_.GetLocation());
+    cinder::vec2 bounds = terrain.GetChunkBounds(player_.GetLocation());
     terrain.GenerateTerrain(bounds);
 
     int xstart = (int) bounds.x * thuglib::kNumPixels;
@@ -79,11 +79,13 @@ void THUGApp::DrawTerrain() {
 
 void THUGApp::DrawPlayer() {
     // Get player location
-    cinder::vec2 location = steve_.GetLocation();
+    cinder::vec2 location = player_.GetLocation();
     cinder::gl::color(Color::white());
     // Render player location based on window coordinates, so we have to use %
-    cinder::gl::drawSolidRect(Rectf( (int) location.x % thuglib::kMapSize, (int) location.y % thuglib::kMapSize,
-                                     ((int) location.x % thuglib::kMapSize) + 4*pixel_size_, ((int) location.y % thuglib::kMapSize) + 4*pixel_size_));
+    cinder::gl::drawSolidRect(Rectf( (int) location.x % thuglib::kMapSize,
+                                      (int) location.y % thuglib::kMapSize,
+                                     ((int) location.x % thuglib::kMapSize) + thuglib::kPlayerSize*pixel_size_,
+                                     ((int) location.y % thuglib::kMapSize) + thuglib::kPlayerSize*pixel_size_));
 }
 
 }  // namespace thugapp
