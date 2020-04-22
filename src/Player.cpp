@@ -17,6 +17,10 @@ namespace thuglib {
          return health;
      }
 
+     bool Player::IsMoving() {
+         return is_moving_;
+     }
+
      void Player::SpeedUp() {
          player_speed_++;
      }
@@ -25,25 +29,33 @@ namespace thuglib {
          player_speed_--;
      }
 
-     void Player::UpdateLocation(const KeyEvent& event) {
-         switch(event.getCode()) {
-             case KeyEvent::KEY_LEFT: {
+     void Player::SetDirection(Direction d) {
+         playerDirection = d;
+     }
+
+     void Player::UpdateLocation() {
+         switch(playerDirection) {
+             case LEFT: {
                  location.x -= kPixelSize;
                  break;
              }
-             case KeyEvent::KEY_RIGHT: {
+             case RIGHT: {
                  location.x += kPixelSize;
                  break;
              }
-             case KeyEvent::KEY_UP: {
+             case UP: {
                  location.y -= kPixelSize;
                  break;
              }
-             case KeyEvent::KEY_DOWN: {
+             case DOWN: {
                  location.y += kPixelSize;
                  break;
              }
          }
+     }
+
+     void Player::ToggleMovement() {
+         is_moving_ = !is_moving_;
      }
 
      cinder::vec2 Player::GetRelativePosition() {

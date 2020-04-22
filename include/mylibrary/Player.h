@@ -13,6 +13,10 @@ namespace thuglib {
     // Scale factor of how large the player is going to be
     const int kPlayerSize = 2;
 
+    enum Direction {
+        LEFT, RIGHT, UP, DOWN
+    };
+
     class Player {
 
       private:
@@ -22,17 +26,22 @@ namespace thuglib {
         float health;
         // How fast the player traverses the map_, in pixels / second
         int player_speed_;
+        bool is_moving_;
+        Direction playerDirection;
       public:
         // Gets absolute player position
         cinder::vec2 GetLocation();
         // Gets relative player position (on screen)
         cinder::vec2 GetRelativePosition();
         float GetHealth();
+        bool IsMoving();
         // Speed increase / decrease
         void SpeedUp();
         void SlowDown();
+        void ToggleMovement();
         // Update player location based on what key was pressed
-        void UpdateLocation(const cinder::app::KeyEvent& event);
+        void UpdateLocation();
+        void SetDirection(Direction d);
         // Default constructor
         Player();
     };

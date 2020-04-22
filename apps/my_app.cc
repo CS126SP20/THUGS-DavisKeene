@@ -43,7 +43,9 @@ void THUGApp::setup() {
 }
 
 void THUGApp::update() {
-
+    if (player_.IsMoving()) {
+        player_.UpdateLocation();
+    }
 }
 
 void THUGApp::draw() {
@@ -54,11 +56,31 @@ void THUGApp::draw() {
     DrawTerrain();
 }
 
+Direction KeyToDirection(const KeyEvent& event) {
+    switch (event.getCode()) {
+        case KeyEvent::KEY_LEFT : {
+            return Direction::LEFT;
+        }
+        case KeyEvent::KEY_RIGHT : {
+            return Direction::RIGHT;
+        }
+        case KeyEvent::KEY_UP : {
+            return Direction::UP;
+        }
+        case KeyEvent::KEY_DOWN : {
+            return Direction::DOWN;
+        }
+    }
+}
+
 void THUGApp::keyDown(KeyEvent event) {
+    std::cout << event.getCode() << std::endl;
     if (event.getCode() == KeyEvent::KEY_F1) {
         draw_stats_ = !draw_stats_;
     }
-    player_.UpdateLocation(event);
+    Direction d = KeyToDirection(event);
+    player_.SetDirection(d);
+    player_.ToggleMovement();
 }
 
 void THUGApp::DrawTerrain() {
