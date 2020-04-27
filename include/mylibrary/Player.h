@@ -36,12 +36,13 @@ namespace thuglib {
         float GetHealth();
         bool IsMoving();
         // Speed increase / decrease
-        void SpeedUp();
-        void SlowDown();
+        void SetSpeed(double terrainValue);
+        int GetSpeed();
         void ToggleMovement();
         // Update player location based on what key was pressed
         void UpdateLocation();
         void SetDirection(Direction d);
+        Direction GetDirection();
         // Default constructor
         Player();
     };

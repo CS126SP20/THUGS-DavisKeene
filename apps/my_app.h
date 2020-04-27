@@ -32,6 +32,10 @@ private:
 private:
     thuglib::Terrain terrain;
     const size_t pixel_size_;
+    std::chrono::time_point<std::chrono::system_clock> last_time_;
+    std::chrono::time_point<std::chrono::system_clock> start_time_;
+    std::chrono::seconds world_end = std::chrono::seconds(60 * 5); // 5 minutes
+    float world_decay_;
     const size_t entity_block_size_;
     cinder::vec2 player_location_;
     cinder::Surface8u terrainSurface;

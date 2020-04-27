@@ -20,6 +20,9 @@ using cinder::Rectf;
 using cinder::gl::Texture;
 using std::string;
 using cinder::TextBox;
+using std::chrono::duration_cast;
+using std::chrono::seconds;
+using std::chrono::system_clock;
 using namespace thuglib;
 
 const char kNormalFont[] = "Arial Unicode MS";
@@ -34,18 +37,32 @@ THUGApp::THUGApp()
       terrainSurface(800, 800, cinder::SurfaceChannelOrder::RGBA),
       new_chunk_{true},
       player_{},
-      draw_stats_{false} {}
+      draw_stats_{false},
+      world_decay_{0.0} {}
 
 void THUGApp::setup() {
     terrain.GenerateTerrain();
+    start_time_ = system_clock::now();
     cinder::gl::enableDepthWrite();
     cinder::gl::enableDepthRead();
 }
 
 void THUGApp::update() {
-    if (player_.IsMoving()) {
+    const auto time = system_clock::now();
+    double terrainValue = terrain.GetValue(player_.GetRelativePosition().x, player_.GetRelativePosition().y);
+    player_.SetSpeed(terrainValue);
+    if (player_.IsMoving() && time - last_time_ > std::chrono::milliseconds(player_.GetSpeed())) {
         player_.UpdateLocation();
+        last_time_ = time;
+        std::cout << world_decay_ << std::endl;
     }
+    using std::chrono::milliseconds;
+    const double elapsed_time =
+            duration_cast<milliseconds>(system_clock::now() - start_time_)
+                    .count();
+    const double countdown_time = milliseconds(world_end).count();
+    const double percentage = elapsed_time / countdown_time;
+    world_decay_ = percentage;
 }
 
 void THUGApp::draw() {
@@ -77,10 +94,13 @@ void THUGApp::keyDown(KeyEvent event) {
     std::cout << event.getCode() << std::endl;
     if (event.getCode() == KeyEvent::KEY_F1) {
         draw_stats_ = !draw_stats_;
+        return;
     }
     Direction d = KeyToDirection(event);
+    if (d == player_.GetDirection() || !player_.IsMoving()) {
+        player_.ToggleMovement();
+    }
     player_.SetDirection(d);
-    player_.ToggleMovement();
 }
 
 void THUGApp::DrawTerrain() {
@@ -101,7 +121,9 @@ void THUGApp::DrawTerrain() {
             } else if (value < .150 && value > .065) {
                 cinder::gl::color(Color((1 - value) * (242/255.0), (1 - value) * 209/255.0, (1 - value) * 107/255.0));
             } else {
-                cinder::gl::color(80/255.0, (1 - value)*(1/1.20), 0);
+                float red = (world_decay_*(30/255.0)) + 80/255.0;
+                float green = (1 - value)*(1/1.20) - ((world_decay_*.85)*(1 - value)*(1/1.20));
+                cinder::gl::color(red, green, 0);
             }
             cinder::gl::drawSolidRect(Rectf(pixel_size_ * (x - xstart),
                     pixel_size_ * (y - ystart),
@@ -147,7 +169,7 @@ void THUGApp::DrawGameStats() {
     if (draw_stats_) {
         cinder::vec2 location = player_.GetRelativePosition();
         cinder::vec2 coords = player_.GetLocation();
-        cinder::vec2 size = {200,100};
+        cinder::vec2 size = {200,150};
         cinder::vec2 text_coords = {kMapSize - size.x, kMapSize - size.y};
         std::stringstream ss;
         // Build the string
@@ -157,7 +179,9 @@ void THUGApp::DrawGameStats() {
         << "Health: "
         << player_.GetHealth() << "\n"
         << "Current Block Value: "
-        << terrain.GetValue(location.x, location.y);
+        << terrain.GetValue(location.x, location.y)
+        << "\nCurrent Speed:\n"
+        << player_.GetSpeed();
         PrintText(ss.str(), Color::white(), size, text_coords);
     }
 }

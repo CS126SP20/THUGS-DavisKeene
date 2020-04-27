@@ -36,3 +36,10 @@
       - This strategy ended up working super well! Game framerate is playable, although I'll experiment with a few other settings, and the terrains are increasingly fun to 
       walk through!
   - [X] Figured out how to load chunk when player walks off screen.
+  
+- <i> 4/27/20 </i>
+
+    - Haven't had a good dev day on this project in a while, so today will just be playing around with mob generation
+and see if we can get player speed to vary depending on the current biome they're in.
+    - Thinking about making a player image instead of a rectangle, with included walking animation.
+    - Also need to figure out the best way to bound the world, and deploy game objective (ie. collect items to win)
