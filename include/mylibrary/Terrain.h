@@ -14,16 +14,16 @@ namespace thuglib {
     // Size of the map_, window is kMapSize x kMapSize pixels
     const int kMapSize = 800;
     // Spawn X coordinate
-    const int kSpawnX = 8000;
+    const int kSpawnX = 4000;
     // Spawn Y Coordinate
-    const int kSpawnY = 8000;
+    const int kSpawnY = 4000;
     // Size of the pixels we want to render on screen
     const int kPixelSize = 16;
     // Number of pixels of our map_, there are kNumPixels x kNumPixels
     // total pixels on the screen.
     const int kNumPixels = kMapSize / kPixelSize;
     // World boundaries
-    const int kWorldBoundary = 16000;
+    const int kWorldBoundary = 8000;
     // Number of antidote ingredients
     const int kAntidoteIngredients = 5;
 
@@ -46,7 +46,10 @@ namespace thuglib {
         void PrintTerrain();
         // Antidote Location methods
         void GenerateAntidotes();
+        // Returns a list (vector) of antidote locations in a given chunk.
         std::vector<cinder::vec2> AntidoteInChunk(const cinder::vec2& bounds);
+        // Removes an antidote given a location.
+        void RemoveAntidote(const cinder::vec2& location);
         // Getters
         int GetSeed();
         float GetFrequency();

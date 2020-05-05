@@ -7,6 +7,7 @@
 
 #include <cinder/app/KeyEvent.h>
 #include "cinder/Vector.h"
+#include <vector>
 
 namespace thuglib {
 
@@ -28,11 +29,17 @@ namespace thuglib {
         int player_speed_;
         bool is_moving_;
         Direction playerDirection;
+        // Player inventory, contains coordinates of antidotes discovered.
+        std::vector<cinder::vec2> inventory;
       public:
         // Gets absolute player position
         cinder::vec2 GetLocation();
         // Gets relative player position (on screen)
         cinder::vec2 GetRelativePosition();
+        // Add to inventory
+        void AddToInventory(cinder::vec2 antidote_location);
+        // Get inventory size
+        int GetInventorySize();
         float GetHealth();
         bool IsMoving();
         // Speed increase / decrease

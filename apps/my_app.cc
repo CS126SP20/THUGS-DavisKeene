@@ -63,6 +63,10 @@ void THUGApp::update() {
     const double countdown_time = milliseconds(world_end).count();
     const double percentage = elapsed_time / countdown_time;
     world_decay_ = percentage;
+    game_won_ = player_.GetInventorySize() == thuglib::kAntidoteIngredients;
+    if (elapsed_time == countdown_time || game_won_) {
+        game_over_ = true;
+    }
 }
 
 void THUGApp::draw() {
@@ -70,8 +74,9 @@ void THUGApp::draw() {
     cinder::gl::enableAlphaBlending();
     if (!has_started_) {
         drawInstructions();
-    }
-    else {
+    } else if (game_over_) {
+        DrawGameOver();
+    } else {
         DrawPlayer();
         DrawAntidotes();
         DrawGameStats();
@@ -97,7 +102,6 @@ Direction KeyToDirection(const KeyEvent& event) {
 }
 
 void THUGApp::keyDown(KeyEvent event) {
-    std::cout << event.getCode() << std::endl;
     if (event.getCode() == KeyEvent::KEY_F1) {
         draw_stats_ = !draw_stats_;
         return;
@@ -198,9 +202,10 @@ void PrintTextMenu(const string& text, const C& color, const cinder::ivec2& size
 
 void THUGApp::DrawGameStats() {
     if (draw_stats_) {
+        using std::chrono::milliseconds;
         cinder::vec2 location = player_.GetRelativePosition();
         cinder::vec2 coords = player_.GetLocation();
-        cinder::vec2 size = {200,150};
+        cinder::vec2 size = {200,200};
         cinder::vec2 text_coords = {kMapSize - size.x, kMapSize - size.y};
         std::stringstream ss;
         // Build the string
@@ -212,7 +217,12 @@ void THUGApp::DrawGameStats() {
         << "Current Block Value: "
         << terrain.GetValue(location.x, location.y)
         << "\nCurrent Speed:\n"
-        << player_.GetSpeed();
+        << player_.GetSpeed()
+        << "\nTime Left\n"
+        << (duration_cast<milliseconds>(world_end - (system_clock::now() - start_time_))
+                .count()/1000)
+                << "\nIngredients Left\n"
+                <<kAntidoteIngredients - player_.GetInventorySize();
         PrintText(ss.str(), Color::white(), size, text_coords);
     }
 }
@@ -235,11 +245,29 @@ void THUGApp::DrawAntidotes() {
     for (cinder::vec2 antidote_location : antidote_locations) {
         int relative_x = ((int) antidote_location.x % kMapSize) / kPixelSize;
         int relative_y = ((int) antidote_location.y % kMapSize) / kPixelSize;
+        if (player_.GetRelativePosition().x == relative_x &&
+        player_.GetRelativePosition().y == relative_y) {
+            std::cout << "bruh" << std::endl;
+            terrain.RemoveAntidote(antidote_location);
+            player_.AddToInventory(antidote_location);
+        }
         cinder::gl::color(Color(rand() % 2, rand() % 2, rand() % 2));
         cinder::gl::drawSolidRect(Rectf(pixel_size_ * (relative_x),
                                         pixel_size_ * (relative_y),
-                                        pixel_size_ * (relative_x) + pixel_size_,
-                                        pixel_size_ * (relative_y) + pixel_size_));
+                                        pixel_size_ * (relative_x) + kPlayerSize * pixel_size_, // Make antidote ingredient same size as player
+                                        pixel_size_ * (relative_y) + kPlayerSize * pixel_size_));
+    }
+}
+
+void THUGApp::DrawGameOver() {
+    cinder::gl::clear(Color(0,0,0)); // Color screen black
+    const cinder::vec2 center = getWindowCenter();
+    const cinder::ivec2 size = {500, 500};
+    const Color color = Color::white();
+    if (game_won_) {
+        PrintTextMenu("Congrats! You Won!", color, size, center);
+    } else {
+        PrintTextMenu("You ran out of time! Game over :(", color, size, center);
     }
 }
 

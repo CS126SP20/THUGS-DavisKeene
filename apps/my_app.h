@@ -29,6 +29,7 @@ private:
     void drawInstructions();
     void DrawAntidotes();
     void ResetGame();
+    void DrawGameOver();
 
 
 private:
@@ -45,6 +46,8 @@ private:
     thuglib::Player player_;
     bool draw_stats_;
     bool has_started_;
+    bool game_won_;
+    bool game_over_;
 };
 
 }  // namespace thugapp

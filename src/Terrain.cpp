@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <mylibrary/Player.h>
 #include "mylibrary/Terrain.h"
 namespace thuglib {
 
@@ -95,6 +96,16 @@ namespace thuglib {
         }
         for (cinder::vec2 location : antidoteLocations) {
             std::cout << location << std::endl;
+        }
+    }
+
+    void Terrain::RemoveAntidote(const cinder::vec2& location) {
+        for (size_t i = 0; i < antidoteLocations.size(); i++) {
+            cinder::vec2 temp_location = antidoteLocations.at(i);
+            if (temp_location == location) {
+                antidoteLocations.erase(antidoteLocations.begin()+(int) i);
+                return;
+            }
         }
     }
 }

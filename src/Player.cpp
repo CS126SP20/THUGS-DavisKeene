@@ -92,4 +92,12 @@ namespace thuglib {
     Direction Player::GetDirection() {
         return playerDirection;
     }
+
+    void Player::AddToInventory(cinder::vec2 antidote_location) {
+        inventory.push_back(antidote_location);
+    }
+
+    int Player::GetInventorySize() {
+        return inventory.size();
+    }
 }
