@@ -37,9 +37,39 @@
       walk through!
   - [X] Figured out how to load chunk when player walks off screen.
   
+- <i> 4/21/20 </i>
+
+    - Figured out the main tradeoff fix for rendering the terrain!
+        - I was stuck on deciding whether to render many pixels or fewer pixels for a good terrain detail, but then I realized that
+        I could increase the noise frequency at the same rate that I decrease the number of pixels for a
+        lower res high frequency terrain. Solution works great and actually looks a lot like a real terrain plot!
+  
 - <i> 4/27/20 </i>
 
     - Haven't had a good dev day on this project in a while, so today will just be playing around with mob generation
 and see if we can get player speed to vary depending on the current biome they're in.
     - Thinking about making a player image instead of a rectangle, with included walking animation.
     - Also need to figure out the best way to bound the world, and deploy game objective (ie. collect items to win)
+    - Accomplished Today:
+        - [x] Player moves at different speeds on different terrains
+        - [x] Player cannot move past the world boundaries specified.
+        - [x] Terrain deteriorates over 5 minutes, leading into the game objective (save the world).
+        - [x] Player movement fix: user can press keystroke to change direction of player. Double click to stop them from moving.
+        
+- <i> 5/4/20 </i>
+
+    - Been completely swamped with final project work for CS 199-KT and Stats homework, but getting back to the grind today.
+    - My last commit had a few new changes, and this time around I plan to improve the game objective.
+    - PIVOT: THUGS is no longer an open-world type game.
+        - I thought that I would have enough time to create a game similar to minecraft, but I have to pivot to make my goals more realistic given my timeframe.
+        - New challenge: Save The World!
+            - The world is dying, and it's up to the player to save the world by collecting ingredients to an antidote to cure the land.
+            - The players' score is determined on how fast they gather the ingredients to beat the game.
+            - Player information should be stored on a database.
+    - TODO:
+        - [x] Add homescreen to give player instructions
+        - [x] Make antidote items spawn on the map
+        - [ ] Allow the player to pick up antidote ingredients
+        - [ ] Make the players' health go down from certain events (swimming, mobs, etc.)
+        - [ ] End the game if the player gets all of the ingredients, or if they run out of time.
+        - [ ] Set up "doctors" that can give hints on the nearest antidote locations.
