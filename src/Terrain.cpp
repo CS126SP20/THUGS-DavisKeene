@@ -49,7 +49,6 @@ namespace thuglib {
         // Utilize integer floor division
         int boundX = (int) x / kMapSize;
         int boundY = (int) y / kMapSize;
-
         return {boundX, boundY};
     }
 
@@ -74,4 +73,28 @@ namespace thuglib {
         return frequency_;
     }
 
+    std::vector<cinder::vec2> Terrain::AntidoteInChunk(const cinder::vec2 &bounds) {
+        cinder::vec2 chunkBounds = GetChunkBounds(bounds); // Upper left bounds
+        std::vector<cinder::vec2> antidoes;
+        for (cinder::vec2 location : antidoteLocations) {
+            int antidote_x = location.x / kMapSize;
+            int antidote_y = location.y / kMapSize;
+            if (antidote_x == chunkBounds.x && antidote_y == chunkBounds.y) {
+                antidoes.push_back(location);
+            }
+        }
+        return antidoes;
+    }
+
+    void Terrain::GenerateAntidotes() {
+        for (int i = 0; i < kAntidoteIngredients; i++) {
+            int randomseed = rand() % 100;
+            std::srand(randomseed);
+            // Generate random number pair between 0 and kWorldBoundary
+            antidoteLocations.emplace_back(rand() % kWorldBoundary, rand() % kWorldBoundary);
+        }
+        for (cinder::vec2 location : antidoteLocations) {
+            std::cout << location << std::endl;
+        }
+    }
 }

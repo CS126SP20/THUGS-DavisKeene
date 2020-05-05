@@ -26,6 +26,8 @@ private:
     void DrawPlayer();
     void DrawGameStats();
     void toggleDrawGameStats();
+    void drawInstructions();
+    void DrawAntidotes();
     void ResetGame();
 
 
@@ -42,6 +44,7 @@ private:
     bool new_chunk_;
     thuglib::Player player_;
     bool draw_stats_;
+    bool has_started_;
 };
 
 }  // namespace thugapp

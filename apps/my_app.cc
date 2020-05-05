@@ -38,7 +38,8 @@ THUGApp::THUGApp()
       new_chunk_{true},
       player_{},
       draw_stats_{false},
-      world_decay_{0.0} {}
+      world_decay_{0.0},
+      has_started_{false} {}
 
 void THUGApp::setup() {
     terrain.GenerateTerrain();
@@ -54,7 +55,6 @@ void THUGApp::update() {
     if (player_.IsMoving() && time - last_time_ > std::chrono::milliseconds(player_.GetSpeed())) {
         player_.UpdateLocation();
         last_time_ = time;
-        std::cout << world_decay_ << std::endl;
     }
     using std::chrono::milliseconds;
     const double elapsed_time =
@@ -68,9 +68,15 @@ void THUGApp::update() {
 void THUGApp::draw() {
     cinder::gl::clear();
     cinder::gl::enableAlphaBlending();
-    DrawPlayer();
-    DrawGameStats();
-    DrawTerrain();
+    if (!has_started_) {
+        drawInstructions();
+    }
+    else {
+        DrawPlayer();
+        DrawAntidotes();
+        DrawGameStats();
+        DrawTerrain();
+    }
 }
 
 Direction KeyToDirection(const KeyEvent& event) {
@@ -95,6 +101,11 @@ void THUGApp::keyDown(KeyEvent event) {
     if (event.getCode() == KeyEvent::KEY_F1) {
         draw_stats_ = !draw_stats_;
         return;
+    }
+    if (!has_started_) {
+        has_started_ = !has_started_;
+        terrain.GenerateAntidotes();
+        start_time_ = system_clock::now();
     }
     Direction d = KeyToDirection(event);
     if (d == player_.GetDirection() || !player_.IsMoving()) {
@@ -165,6 +176,26 @@ void PrintText(const string& text, const C& color, const cinder::ivec2& size,
     cinder::gl::draw(texture, locp);
 }
 
+template <typename C>
+void PrintTextMenu(const string& text, const C& color, const cinder::ivec2& size,
+               const cinder::vec2& loc) {
+    cinder::gl::color(color);
+
+    auto box = TextBox()
+            .alignment(TextBox::CENTER)
+            .font(cinder::Font(kNormalFont, 20))
+            .size(size)
+            .color(color)
+            .backgroundColor(ColorA(0, 0, 0, 0))
+            .text(text);
+
+    const auto box_size = box.getSize();
+    const cinder::vec2 locp = {loc.x - box_size.x / 2, loc.y - box_size.y / 2};
+    const auto surface = box.render();
+    const auto texture = cinder::gl::Texture::create(surface);
+    cinder::gl::draw(texture, locp);
+}
+
 void THUGApp::DrawGameStats() {
     if (draw_stats_) {
         cinder::vec2 location = player_.GetRelativePosition();
@@ -183,6 +214,32 @@ void THUGApp::DrawGameStats() {
         << "\nCurrent Speed:\n"
         << player_.GetSpeed();
         PrintText(ss.str(), Color::white(), size, text_coords);
+    }
+}
+
+void THUGApp::drawInstructions() {
+    cinder::gl::clear(Color(0,0,0)); // Color screen black
+    const cinder::vec2 center = getWindowCenter();
+    const cinder::ivec2 size = {500, 500};
+    const Color color = Color::white();
+    PrintTextMenu("Hello, and welcome to THUGS: The Half-baked Unimportant Game (Singleplayer). Think minecraft and terreria from a top-down view.\n\n"
+                  "The world is in danger! A deadly pathogen is killing the land, and it's up to you to stop it! You need to collect all 5 pieces of the antidote in order "
+                  "to save the land and the world! Be speedy, because you have 5 minutes to collect the pieces before the terrain dies forever!\n\n"
+                  "Antidote ingredients are scattered around the map, but are all visible among the terrain. Doctors will also spawn around the map, and can tell you "
+                  "which direction to go to get to the closest ingredient. If you fail to collect all 5 ingredients by the end of the game, you lose!\n\n"
+                  "Press any key to start your adventure.", color, size, center);
+}
+
+void THUGApp::DrawAntidotes() {
+    std::vector<cinder::vec2> antidote_locations = terrain.AntidoteInChunk(player_.GetLocation());
+    for (cinder::vec2 antidote_location : antidote_locations) {
+        int relative_x = ((int) antidote_location.x % kMapSize) / kPixelSize;
+        int relative_y = ((int) antidote_location.y % kMapSize) / kPixelSize;
+        cinder::gl::color(Color(rand() % 2, rand() % 2, rand() % 2));
+        cinder::gl::drawSolidRect(Rectf(pixel_size_ * (relative_x),
+                                        pixel_size_ * (relative_y),
+                                        pixel_size_ * (relative_x) + pixel_size_,
+                                        pixel_size_ * (relative_y) + pixel_size_));
     }
 }
 

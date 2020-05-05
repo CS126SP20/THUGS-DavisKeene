@@ -6,6 +6,7 @@
 #define FINALPROJECT_TERRAIN_H
 
 #include <cinder/Vector.h>
+#include <vector>
 #include "FastNoise.h"
 
 namespace thuglib {
@@ -23,6 +24,8 @@ namespace thuglib {
     const int kNumPixels = kMapSize / kPixelSize;
     // World boundaries
     const int kWorldBoundary = 16000;
+    // Number of antidote ingredients
+    const int kAntidoteIngredients = 5;
 
     class Terrain {
       public:
@@ -37,9 +40,13 @@ namespace thuglib {
         // Generates a terrain given our player's location
         void GenerateTerrain(const cinder::vec2& bounds);
         // Gets the bounds of our chunk based on the player's location
+        // Bounds are defined in terms of x y coordinate pairs, representing the coordinate of the chunk
         cinder::vec2 GetChunkBounds(const cinder::vec2& playerLocation);
         // Prints the values of our terrain as a matrix
         void PrintTerrain();
+        // Antidote Location methods
+        void GenerateAntidotes();
+        std::vector<cinder::vec2> AntidoteInChunk(const cinder::vec2& bounds);
         // Getters
         int GetSeed();
         float GetFrequency();
@@ -55,6 +62,8 @@ namespace thuglib {
         int seed_;
         // Noise frequency
         float frequency_;
+        // Antidote ingredient locations
+        std::vector<cinder::vec2> antidoteLocations;
     };
 } // namespace terrain
 
