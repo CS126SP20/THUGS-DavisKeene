@@ -69,7 +69,16 @@ and see if we can get player speed to vary depending on the current biome they'r
     - TODO:
         - [x] Add homescreen to give player instructions
         - [x] Make antidote items spawn on the map
-        - [ ] Allow the player to pick up antidote ingredients
-        - [ ] Make the players' health go down from certain events (swimming, mobs, etc.)
-        - [ ] End the game if the player gets all of the ingredients, or if they run out of time.
+        - [x] Allow the player to pick up antidote ingredients
+        - [x] Make the players' health go down from certain events (swimming, mobs, etc.)
+        - [x] End the game if the player gets all of the ingredients, or if they run out of time.
         - [ ] Set up "doctors" that can give hints on the nearest antidote locations.
+        
+- <i> 5/5/20 </i>
+
+    - Finished everything from 5/4/20 Checklist aside from adding doctors.
+    - TODO
+        - [ ] Use random seed as currentTime for making randomness, or use random c++ library instead of rand().
+        - [ ] Add doctors / hospitals / some sort of entity that can point the user in the right direction.
+        - [ ] (Maybe) Add mobs like zombies or something that can harm the player if the player walks into them.
+        - [ ] Clean up some magic numbers and other pieces of the code that could look nicer.
