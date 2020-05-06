@@ -8,18 +8,36 @@
 #include <mylibrary/Terrain.h>
 #include <cinder/gl/gl.h>
 #include <mylibrary/Player.h>
+#include <cinder/Color.h>
 
 
 namespace thugapp {
 
 class THUGApp : public cinder::app::App {
+    // Color constants
+    float kBlueThreshold = .150;
+    float kSandThreshold = .065;
+    // Sand
+    float kSandRed = 242/255.0;
+    float kSandGreen = 209/255.0;
+    float kSandBlue = 107/255.0;
+    // Grass
+    float kGrassRedValue = 30/255.0;
+    float kGrassRedShift = 80/255.0;
+    float kGrassGreenRatio = (1/1.20);
+    float kGrassGreenDecayRatio = .85;
+
+
  public:
   THUGApp();
   void setup() override;
   void update() override;
   void draw() override;
   void keyDown(cinder::app::KeyEvent) override;
-  cinder::gl::Texture2dRef player_img;
+  // Person image
+    cinder::ImageSourceRef ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/man.png");
+    cinder::gl::Texture2dRef icon = cinder::gl::Texture2d::create(ref);
+
 
 private:
     void DrawTerrain();
@@ -30,7 +48,7 @@ private:
     void DrawAntidotes();
     void ResetGame();
     void DrawGameOver();
-
+    cinder::Color GetPixelColor(float value);
 
 private:
     thuglib::Terrain terrain;

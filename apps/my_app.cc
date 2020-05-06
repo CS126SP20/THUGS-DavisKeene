@@ -64,13 +64,18 @@ void THUGApp::update() {
     const double percentage = elapsed_time / countdown_time;
     world_decay_ = percentage;
     game_won_ = player_.GetInventorySize() == thuglib::kAntidoteIngredients;
-    if (elapsed_time == countdown_time || game_won_) {
+    // Check to see if the time is up, or if we have won the game
+    if ((duration_cast<milliseconds>(world_end - (system_clock::now() - start_time_))
+                 .count()/1000 == 0) || game_won_) {
         game_over_ = true;
     }
 }
 
 void THUGApp::draw() {
-    cinder::gl::clear();
+    // Have to fake transparency because of cinder drawing
+    cinder::vec2 location = player_.GetRelativePosition();
+    float value = terrain.GetValue(location.x, location.y);
+    cinder::gl::clear(GetPixelColor(value));
     cinder::gl::enableAlphaBlending();
     if (!has_started_) {
         drawInstructions();
@@ -131,15 +136,7 @@ void THUGApp::DrawTerrain() {
         for (int y = ystart; y < yend; y++) {
             float value = terrain.GetValue((x - xstart), (y - ystart));
             // Change color based on value, to make mountains and rivers and stuff
-            if (value > .150) {
-                cinder::gl::color(0, 0, 1 - value);
-            } else if (value < .150 && value > .065) {
-                cinder::gl::color(Color((1 - value) * (242/255.0), (1 - value) * 209/255.0, (1 - value) * 107/255.0));
-            } else {
-                float red = (world_decay_*(30/255.0)) + 80/255.0;
-                float green = (1 - value)*(1/1.20) - ((world_decay_*.85)*(1 - value)*(1/1.20));
-                cinder::gl::color(red, green, 0);
-            }
+            cinder::gl::color(GetPixelColor(value));
             cinder::gl::drawSolidRect(Rectf(pixel_size_ * (x - xstart),
                     pixel_size_ * (y - ystart),
                     pixel_size_* (x - xstart) + pixel_size_,
@@ -153,7 +150,7 @@ void THUGApp::DrawPlayer() {
     cinder::vec2 location = player_.GetLocation();
     cinder::gl::color(Color::white());
     // Render player location based on window coordinates, so we have to use %
-    cinder::gl::drawSolidRect(Rectf( (int) location.x % kMapSize,
+    cinder::gl::draw(icon, Rectf( (int) location.x % kMapSize,
                                       (int) location.y % kMapSize,
                                      ((int) location.x % kMapSize) + kPlayerSize * pixel_size_,
                                      ((int) location.y % kMapSize) + kPlayerSize * pixel_size_));
@@ -247,12 +244,15 @@ void THUGApp::DrawAntidotes() {
         int relative_y = ((int) antidote_location.y % kMapSize) / kPixelSize;
         if (player_.GetRelativePosition().x == relative_x &&
         player_.GetRelativePosition().y == relative_y) {
-            std::cout << "bruh" << std::endl;
             terrain.RemoveAntidote(antidote_location);
             player_.AddToInventory(antidote_location);
         }
-        cinder::gl::color(Color(rand() % 2, rand() % 2, rand() % 2));
-        cinder::gl::drawSolidRect(Rectf(pixel_size_ * (relative_x),
+        // Get random antidote image
+        int random = rand() % 4;
+        cinder::ImageSourceRef a_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/antidote-1.png");
+        cinder::gl::Texture2dRef a_icon = cinder::gl::Texture2d::create(a_ref);
+        cinder::gl::color(rand() % 2, rand() % 2, rand() % 2);
+        cinder::gl::draw(a_icon, Rectf(pixel_size_ * (relative_x),
                                         pixel_size_ * (relative_y),
                                         pixel_size_ * (relative_x) + kPlayerSize * pixel_size_, // Make antidote ingredient same size as player
                                         pixel_size_ * (relative_y) + kPlayerSize * pixel_size_));
@@ -270,5 +270,21 @@ void THUGApp::DrawGameOver() {
         PrintTextMenu("You ran out of time! Game over :(", color, size, center);
     }
 }
+
+    cinder::Color THUGApp::GetPixelColor(float value) {
+        if (value > kBlueThreshold) {
+            // Ocean
+            return Color(0, 0, 1 - value);
+        } else if (value < kBlueThreshold && value > kSandThreshold) {
+            // Sand
+            return (Color((1 - value) * kSandRed, (1 - value) * kSandGreen, (1 - value) * kSandBlue));
+        } else {
+            // Grass
+            float red = (world_decay_ * (kGrassRedValue) + kGrassRedValue);
+            float green = (1 - value) * (kGrassGreenRatio) -
+                    ((world_decay_*kGrassGreenDecayRatio) * (1 - value) * (kGrassGreenRatio));
+            return Color(red, green, 0);
+        }
+    }
 
 }  // namespace thugapp

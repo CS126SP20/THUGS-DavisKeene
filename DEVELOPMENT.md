@@ -14,9 +14,9 @@
   - Generated terrains for the first time!
   - Experimented with different RGB values and good float cutoff values to generate hills and lakes.
   - TODO:
-    - Further experiment with constants for terrain generation. [X]
-    - Experiment with different types of noise_ for the best terrain. [X]
-    - Add a character into the game that can "walk" around on the terrain. [X]
+    - [x] Further experiment with constants for terrain generation.
+    - [x] Experiment with different types of noise_ for the best terrain.
+    - [x] Add a character into the game that can "walk" around on the terrain.
     
   - Roadblocks
     - Having trouble with getting a character to be drawn on screen. Calling the draw function on the image of a player, but they're not
