@@ -30,39 +30,60 @@ class THUGApp : public cinder::app::App {
 
  public:
   THUGApp();
+  // Set up game
   void setup() override;
+  // Update variables each frame
   void update() override;
+  // Draw each frame
   void draw() override;
+  // Respond to keys being pressed
   void keyDown(cinder::app::KeyEvent) override;
   // Person image
     cinder::ImageSourceRef ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/man.png");
     cinder::gl::Texture2dRef icon = cinder::gl::Texture2d::create(ref);
-
+    // Map image
     cinder::ImageSourceRef map_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/map.png");
     cinder::gl::Texture2dRef map_icon = cinder::gl::Texture2d::create(map_ref);
 
 
 
 private:
+    // Draw the procedurally generated terrain
     void DrawTerrain();
+    // Draw the player on screen
     void DrawPlayer();
+    // Display game stats after pressing F1
     void DrawGameStats();
-    void toggleDrawGameStats();
-    void drawInstructions();
+    // Draw the beginning window to display instructions to user
+    void DrawInstructions();
+    // Draw the antidote ingredients on screen
     void DrawAntidotes();
-    void ResetGame();
+    // Draw the game over screen, whether the user won or lost
     void DrawGameOver();
+    // Draw the maps on screen
     void DrawMaps();
+    // Draw mobs
+    void DrawMobs();
+    // Get color of pixel on terrain from value at that point
     cinder::Color GetPixelColor(float value);
 
 private:
+    // Terrain instance
     thuglib::Terrain terrain;
+    // Size of the pixels on screen
     const size_t pixel_size_;
+    // Stores last time the player moved one pixel
     std::chrono::time_point<std::chrono::system_clock> last_time_;
+    // Stores the time the player started the game
     std::chrono::time_point<std::chrono::system_clock> start_time_;
+    // Time player picked up a map
     std::chrono::time_point<std::chrono::system_clock> hint_start_time_;
-    std::chrono::seconds world_end = std::chrono::seconds(60 * 5); // 5 minutes
-    std::chrono::seconds hint_end = std::chrono::seconds(5); // 5 seconds
+    // Time we finished in
+    std::chrono::time_point<std::chrono::system_clock> finish_time_;
+    // Constant time player needs to finish by
+    const std::chrono::seconds world_end = std::chrono::seconds(60 * 4); // 4 minutes
+    // Constant number of seconds that the hint stays on screen
+    const std::chrono::seconds hint_end = std::chrono::seconds(5); // 5 seconds
     float world_decay_;
     const size_t entity_block_size_;
     cinder::vec2 player_location_;

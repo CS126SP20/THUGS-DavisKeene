@@ -3,9 +3,10 @@
 //
 
 #include <iostream>
-#include <mylibrary/Player.h>
 #include <chrono>
 #include "mylibrary/Terrain.h"
+#include <mylibrary/Mob.h>
+
 namespace thuglib {
 
     void Terrain::GenerateTerrain() {
@@ -159,4 +160,15 @@ namespace thuglib {
             }
         }
     }
+
+//    void Terrain::GenerateMobs() {
+//        for (int i = 0; i < kNumMobs; i++) {
+//            Mob m("spider");
+//            mobs.push_back(m);
+//        }
+//    }
+//
+//    std::vector<Mob> Terrain::GetMobs() {
+//        return mobs;
+//    }
 }

@@ -14,8 +14,6 @@ namespace thuglib {
     // Scale factor of how large the player is going to be
     const int kPlayerSize = 3;
 
-    // Player icon
-
     enum Direction {
         LEFT, RIGHT, UP, DOWN
     };

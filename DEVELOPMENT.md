@@ -86,3 +86,9 @@ and see if we can get player speed to vary depending on the current biome they'r
         - As of right now, maps and ingredients belong only to the terrain, and are not in their own separate classes.
         I'll probably fix this later, assuming I have time. Otherwise, I think it's still logical for these items to be
         a part of the terrain because they are objects that spawn on the terrain only.
+        
+- <i> 5/6/20 </i>
+
+    - Having an aggravating issue trying to add Mobs as their own class. May have to do the same thing as I am with ingredients and maps, and have them
+    just as static members of the terrain instead of decomposing them as their own objects. Really frustrating, especially since the deadline is close and
+    I practically have the project finalized.

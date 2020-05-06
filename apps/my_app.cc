@@ -9,7 +9,7 @@
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
 #include <mylibrary/Player.h>
-
+#include <mylibrary/Terrain.h>
 
 namespace thugapp {
 
@@ -109,9 +109,11 @@ void THUGApp::update() {
     if ((duration_cast<milliseconds>(world_end - (system_clock::now() - start_time_))
                  .count()/1000 == 0) || game_won_) {
         game_over_ = true;
+        finish_time_ = system_clock::now();
     }
+    // Showing the hint logic
     if (show_hint_) {
-        if (duration_cast<milliseconds>(system_clock::now() - hint_start_time_).count() > 5000) {
+        if (duration_cast<milliseconds>(system_clock::now() - hint_start_time_).count() > duration_cast<milliseconds>(hint_end).count()) {
             show_hint_ = false;
         }
     }
@@ -124,16 +126,18 @@ void THUGApp::draw() {
     cinder::gl::clear(GetPixelColor(value));
     cinder::gl::enableAlphaBlending();
     if (!has_started_) {
-        drawInstructions();
+        DrawInstructions();
     } else if (game_over_) {
         DrawGameOver();
+        DrawTerrain();
     } else {
         DrawPlayer();
         if (show_hint_) {
             std::stringstream ss;
             ss << "Closest ingredient is " << terrain.GetDistanceToClosestAntidote(player_.GetLocation()) << " blocks away.";
-            PrintText(ss.str(), Color::white(), {250, 250}, {0, 0});
+            PrintText(ss.str(), Color::white(), {250, 50}, {0, 0});
         }
+        // DrawMobs();
         DrawAntidotes();
         DrawMaps();
         DrawGameStats();
@@ -167,6 +171,7 @@ void THUGApp::keyDown(KeyEvent event) {
         has_started_ = !has_started_;
         terrain.GenerateAntidotes();
         terrain.GenerateMaps();
+        // terrain.GenerateMobs();
         start_time_ = system_clock::now();
     }
     Direction d = KeyToDirection(event);
@@ -234,7 +239,7 @@ void THUGApp::DrawGameStats() {
     }
 }
 
-void THUGApp::drawInstructions() {
+void THUGApp::DrawInstructions() {
     cinder::gl::clear(Color(0,0,0)); // Color screen black
     const cinder::vec2 center = getWindowCenter();
     const cinder::ivec2 size = {500, 500};
@@ -242,7 +247,7 @@ void THUGApp::drawInstructions() {
     PrintTextMenu("Hello, and welcome to THUGS: The Half-baked Unimportant Game (Singleplayer). Think minecraft and terreria from a top-down view.\n\n"
                   "The world is in danger! A deadly pathogen is killing the land, and it's up to you to stop it! You need to collect all 5 pieces of the antidote in order "
                   "to save the land and the world! Be speedy, because you have 5 minutes to collect the pieces before the terrain dies forever!\n\n"
-                  "Antidote ingredients are scattered around the map, but are all visible among the terrain. Doctors will also spawn around the map, and can tell you "
+                  "Antidote ingredients are scattered around the map, but are all visible among the terrain. Maps will also spawn around the map, and can tell you "
                   "which direction to go to get to the closest ingredient. If you fail to collect all 5 ingredients by the end of the game, you lose!\n\n"
                   "Press any key to start your adventure.", color, size, center);
 }
@@ -275,7 +280,15 @@ void THUGApp::DrawGameOver() {
     const cinder::ivec2 size = {500, 500};
     const Color color = Color::white();
     if (game_won_) {
-        PrintTextMenu("Congrats! You Won!", color, size, center);
+        std::stringstream ss;
+        using std::chrono::milliseconds;
+        ss << "Congrats, you won!\n"
+        << "You gathered all ingredients in "
+        << (duration_cast<milliseconds>((finish_time_ - start_time_))
+                    .count()/1000)
+        << " seconds!\n"
+        << "To play again, close the window and press play.";
+        PrintTextMenu(ss.str(), color, size, center);
     } else {
         PrintTextMenu("You ran out of time! Game over :(", color, size, center);
     }
@@ -316,5 +329,11 @@ void THUGApp::DrawMaps() {
                                        pixel_size_ * (relative_y) + kPlayerSize * pixel_size_));
     }
 }
+
+//    void THUGApp::DrawMobs() {
+//        for (Mob m : terrain.GetMobs()) {
+//            m.Draw();
+//        }
+//    }
 
 }  // namespace thugapp

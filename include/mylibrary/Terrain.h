@@ -10,27 +10,28 @@
 #include "FastNoise.h"
 
 namespace thuglib {
-
     // Size of the map_, window is kMapSize x kMapSize pixels
     const int kMapSize = 800;
+    // World boundaries
+    const int kWorldBoundary = 8000;
     // Spawn X coordinate
-    const int kSpawnX = 4000;
+    const int kSpawnX = kWorldBoundary / 2 + kMapSize / 2;
     // Spawn Y Coordinate
-    const int kSpawnY = 4000;
+    const int kSpawnY = kWorldBoundary / 2 + kMapSize / 2;
     // Size of the pixels we want to render on screen
     const int kPixelSize = 16;
     // Number of pixels of our map_, there are kNumPixels x kNumPixels
     // total pixels on the screen.
     const int kNumPixels = kMapSize / kPixelSize;
-    // World boundaries
-    const int kWorldBoundary = 8000;
     // Number of antidote ingredients
     const int kAntidoteIngredients = 5;
     // Number of maps, proportional to number of ingredients
     const int kNumMaps = kAntidoteIngredients * 5;
+    // Number of mobs on map
+    const int kNumMobs = 10;
 
     class Terrain {
-      public:
+    public:
         // Default Constructor
         Terrain();
         // Constructor with params
@@ -64,7 +65,7 @@ namespace thuglib {
         int GetSeed();
         float GetFrequency();
 
-      private:
+    private:
         // Our FastNoise object that we use to get the noise
         FastNoise noise_;
         // Noise Type
