@@ -1,33 +1,42 @@
-// Copyright (c) 2020 [Your Name]. All rights reserved.
-#ifndef FINALPROJECT_MYLIBRARY_MOB_H_
-#define FINALPROJECT_MYLIBRARY_MOB_H_
+//
+// Created by davis on 5/6/20.
+//
 
-#include <string>
-#include "cinder/Vector.h"
-#include "mylibrary/Terrain.h"
-#include <cinder/Surface.h>
+#ifndef FINALPROJECT_MOB_H
+#define FINALPROJECT_MOB_H
+
+#endif //FINALPROJECT_MOB_H
 #include <cinder/gl/gl.h>
+#include <mylibrary/Player.h>
 
-using std::string;
-namespace thuglib {
+namespace terrain {
 
-//    // Size of mobs on screen, in pixels
-//    const int kMobSize = 3;
-//
-//    class Mob {
-//        public:
-//            Mob(string name);
-//            Mob(string name, cinder::vec2 location);
-//            void Draw();
-//            cinder::vec2 GetRelativePosition();
-//            cinder::vec2 GetLocation();
-//
-//        private:
-//            string name_;
-//            cinder::vec2 location_;
-//            double damage_;
-//    };
+    // Number of mobs on map
+    const int kNumMobs = 50;
+    // Size of mobs on screen
+    const int kMobSize = 3;
 
-}  // namespace thuglib
+    class Mob {
+        cinder::ImageSourceRef zombie_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/zombie.png");
+        cinder::gl::Texture2dRef zombie_icon = cinder::gl::Texture2d::create(zombie_ref);
 
-#endif // FINALPROJECT_MYLIBRARY_MOB_H_
+        cinder::ImageSourceRef spider_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/spider.png");
+        cinder::gl::Texture2dRef spider_icon = cinder::gl::Texture2d::create(spider_ref);
+
+    public:
+        explicit Mob(std::string name);
+        Mob(std::string name, cinder::vec2 location);
+        void Draw();
+        cinder::vec2 GetRelativePosition();
+        cinder::vec2 GetLocation();
+        double GetDamage();
+        void UpdateLocation();
+        player::Direction direction;
+
+    private:
+        std::string name_;
+        cinder::vec2 location_;
+        double damage_;
+        float speed;
+    };
+}

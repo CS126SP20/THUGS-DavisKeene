@@ -10,8 +10,10 @@
 #include "FastNoise.h"
 #include "Player.h"
 #include <cinder/gl/gl.h>
+#include "Mob.h"
 
-namespace thuglib {
+using terrain::Mob;
+namespace terrain {
     // Size of the map_, window is kMapSize x kMapSize pixels
     const int kMapSize = 800;
     // World boundaries
@@ -29,33 +31,6 @@ namespace thuglib {
     const int kAntidoteIngredients = 5;
     // Number of maps, proportional to number of ingredients
     const int kNumMaps = kAntidoteIngredients * 5;
-    // Number of mobs on map
-    const int kNumMobs = 50;
-
-    const int kMobSize = 3;
-
-    class Mob {
-        cinder::ImageSourceRef zombie_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/zombie.png");
-        cinder::gl::Texture2dRef zombie_icon = cinder::gl::Texture2d::create(zombie_ref);
-
-        cinder::ImageSourceRef spider_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/spider.png");
-        cinder::gl::Texture2dRef spider_icon = cinder::gl::Texture2d::create(spider_ref);
-
-    public:
-        Mob(std::string name);
-        Mob(std::string name, cinder::vec2 location);
-        void Draw();
-        cinder::vec2 GetRelativePosition();
-        cinder::vec2 GetLocation();
-        void UpdateLocation();
-        Direction direction;
-
-    private:
-        std::string name_;
-        cinder::vec2 location_;
-        double damage_;
-        float speed;
-    };
 
     class Terrain {
     public:
@@ -67,9 +42,9 @@ namespace thuglib {
         float GetValue(int x, int y);
         // Generate a terrain at spawn
         void GenerateTerrain();
-        // Generates a terrain given our player's location
+        // Generates a terrain given our player's location_
         void GenerateTerrain(const cinder::vec2& bounds);
-        // Gets the bounds of our chunk based on the player's location
+        // Gets the bounds of our chunk based on the player's location_
         // Bounds are defined in terms of x y coordinate pairs, representing the coordinate of the chunk
         cinder::vec2 GetChunkBounds(const cinder::vec2& playerLocation);
         // Prints the values of our terrain as a matrix
@@ -78,9 +53,9 @@ namespace thuglib {
         void GenerateAntidotes();
         // Returns a list (vector) of antidote locations in a given chunk.
         std::vector<cinder::vec2> AntidoteInChunk(const cinder::vec2& bounds);
-        // Removes an antidote given a location.
+        // Removes an antidote given a location_.
         void RemoveAntidote(const cinder::vec2& location);
-        // Gets closest antidote to a location
+        // Gets closest antidote to a location_
         double GetDistanceToClosestAntidote(const cinder::vec2& location);
         // Map methods
         void GenerateMaps();
@@ -88,16 +63,15 @@ namespace thuglib {
         std::vector<cinder::vec2> MapsInChunk(const cinder::vec2& bounds);
         // Remove maps from world
         void RemoveMap(const cinder::vec2& location);
-        // Getters
-        std::vector<Mob> GetMobsInChunk(const cinder::vec2& bounds);
+        // Fill terrain with mobs
         void GenerateMobs();
+        // Determine if a mob is inside of a given chunk
         bool IsMobInChunk(Mob m, const glm::vec2 &bounds);
-        int GetSeed();
-        float GetFrequency();
-
-        bool IsInRange(cinder::vec2 obj1, cinder::vec2 obj2, int obj1size, int obj2size);
-
+        // Checks to see if two objects on the map are overlapping.
+        bool IsOverlapping(cinder::vec2 obj1, cinder::vec2 obj2, int obj1size, int obj2size);
+        // Public vector containing mobs, so their locations can be updated in-game
         std::vector<Mob> mobs;
+
     private:
         // Our FastNoise object that we use to get the noise
         FastNoise noise_;
@@ -111,6 +85,7 @@ namespace thuglib {
         float frequency_;
         // Antidote ingredient locations
         std::vector<cinder::vec2> antidoteLocations;
+        // Map locations
         std::vector<cinder::vec2> mapLocations;
     };
 

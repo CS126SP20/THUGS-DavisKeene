@@ -5,16 +5,17 @@
 #include <mylibrary/Terrain.h>
 #include "mylibrary/Player.h"
 
-namespace thuglib {
+using namespace terrain;
+namespace player {
 
     using cinder::app::KeyEvent;
 
      cinder::vec2 Player::GetLocation() {
-         return location;
+         return location_;
      }
 
      float Player::GetHealth() {
-         return health;
+         return health_;
      }
 
      bool Player::IsMoving() {
@@ -22,37 +23,37 @@ namespace thuglib {
      }
 
      void Player::SetDirection(Direction d) {
-         playerDirection = d;
+         player_direction_ = d;
      }
 
      void Player::UpdateLocation() {
-         switch(playerDirection) {
+         switch(player_direction_) {
              case LEFT: {
-                 if (location.x == 0) {
+                 if (location_.x == 0) {
                      return;
                  }
-                 location.x -= kPixelSize;
+                 location_.x -= kPixelSize;
                  break;
              }
              case RIGHT: {
-                 if (location.x == kWorldBoundary - (kPixelSize * kPlayerSize)) { // Since location is measured from the top left block
+                 if (location_.x == kWorldBoundary - (kPixelSize * kPlayerSize)) { // Since location_ is measured from the top left block
                      return;
                  }
-                 location.x += kPixelSize;
+                 location_.x += kPixelSize;
                  break;
              }
              case UP: {
-                 if (location.y == 0) {
+                 if (location_.y == 0) {
                      return;
                  }
-                 location.y -= kPixelSize;
+                 location_.y -= kPixelSize;
                  break;
              }
              case DOWN: {
-                 if (location.y == kWorldBoundary - (kPixelSize * kPlayerSize) ) {
+                 if (location_.y == kWorldBoundary - (kPixelSize * kPlayerSize) ) {
                      return;
                  }
-                 location.y += kPixelSize;
+                 location_.y += kPixelSize;
                  break;
              }
          }
@@ -63,15 +64,15 @@ namespace thuglib {
      }
 
      cinder::vec2 Player::GetRelativePosition() {
-         int relative_x = ((int) location.x % kMapSize) / kPixelSize;
-         int relative_y = ((int) location.y % kMapSize) / kPixelSize;
+         int relative_x = ((int) location_.x % kMapSize) / kPixelSize;
+         int relative_y = ((int) location_.y % kMapSize) / kPixelSize;
          return {relative_x, relative_y};
      }
 
      Player::Player() {
          player_speed_ = 100;
-         health = 100.0;
-         location = {thuglib::kSpawnX, thuglib::kSpawnY};
+         health_ = 100.0;
+         location_ = {kSpawnX, kSpawnY};
      }
 
     void Player::SetSpeed(double terrainValue) {
@@ -90,14 +91,21 @@ namespace thuglib {
     }
 
     Direction Player::GetDirection() {
-        return playerDirection;
+        return player_direction_;
     }
 
     void Player::AddToInventory(cinder::vec2 antidote_location) {
-        inventory.push_back(antidote_location);
+        inventory_.push_back(antidote_location);
     }
 
     int Player::GetInventorySize() {
-        return inventory.size();
+        return inventory_.size();
+    }
+
+    void Player::DealDamage(double damage) {
+         health_ -= damage;
+         if (health_ < 0) {
+             health_ = 0;
+         }
     }
 }

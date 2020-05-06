@@ -5,7 +5,6 @@
 #include <catch2/catch.hpp>
 #include <cinder/Rand.h>
 
-#include <mylibrary/Mob.h>
 #include <mylibrary/Terrain.h>
 
 
@@ -16,14 +15,14 @@ TEST_CASE("Random sanity test", "[random]") {
 }
 
 TEST_CASE("Terrain does generate", "[terrain]") {
-    thuglib::Terrain terrain;
+    terrain::Terrain terrain;
     terrain.GenerateTerrain();
     terrain.PrintTerrain();
     REQUIRE(true);
 }
 
 TEST_CASE("Get Value from Terrain", "[terrain]") {
-    thuglib::Terrain terrain;
+    terrain::Terrain terrain;
     terrain.GenerateTerrain();
     std::cout << "-----" <<std::endl;
     std::cout << terrain.GetValue(0, 0);

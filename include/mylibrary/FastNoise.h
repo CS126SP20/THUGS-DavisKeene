@@ -158,11 +158,11 @@ public:
     // Returns the maximum distance a cellular point can move from its grid position
     FN_DECIMAL GetCellularJitter() const { return m_cellularJitter; }
 
-    // Sets the maximum warp distance from original location when using GradientPerturb{Fractal}(...)
+    // Sets the maximum warp distance from original location_ when using GradientPerturb{Fractal}(...)
     // Default: 1.0
     void SetGradientPerturbAmp(FN_DECIMAL gradientPerturbAmp) { m_gradientPerturbAmp = gradientPerturbAmp; }
 
-    // Returns the maximum warp distance from original location when using GradientPerturb{Fractal}(...)
+    // Returns the maximum warp distance from original location_ when using GradientPerturb{Fractal}(...)
     FN_DECIMAL GetGradientPerturbAmp() const { return m_gradientPerturbAmp; }
 
     //2D

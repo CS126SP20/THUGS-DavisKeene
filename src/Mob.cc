@@ -1,16 +1,17 @@
 // Copyright (c) 2020 [Your Name]. All rights reserved.
 
-#include <mylibrary/Mob.h>
 #include <cinder/Vector.h>
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
 #include <mylibrary/Terrain.h>
 #include <random>
 
-
 using cinder::Rectf;
 
-namespace thuglib {
+using std::string;
+using namespace player;
+
+namespace terrain {
 
     Mob::Mob(string name) {
         name_ = name;
@@ -25,10 +26,12 @@ namespace thuglib {
         if (name == "spider") {
             direction = RIGHT;
             speed = 1.0f;
+            damage_ = 2.0;
         } else {
             direction = UP;
             speed = .5f;
-        };
+            damage_ = 2.50;
+        }
     }
 
     Mob::Mob(string name, cinder::vec2 location) {
@@ -71,15 +74,15 @@ namespace thuglib {
                     direction = RIGHT;
                     break;
                 }
-                location_.x -= .5f*kPixelSize;
+                location_.x -= speed * kPixelSize;
                 break;
             }
             case RIGHT: {
-                if (location_.x > kWorldBoundary - (kPixelSize * kMobSize)) { // Since location is measured from the top left block
+                if (location_.x > kWorldBoundary - (kPixelSize * kMobSize)) { // Since location_ is measured from the top left block
                     direction = LEFT;
                     break;
                 }
-                location_.x += .5f*kPixelSize;
+                location_.x += speed * kPixelSize;
                 break;
             }
             case UP: {
@@ -87,7 +90,7 @@ namespace thuglib {
                     direction = DOWN;
                     break;
                 }
-                location_.y -= .5f*kPixelSize;
+                location_.y -= speed * kPixelSize;
                 break;
             }
             case DOWN: {
@@ -95,9 +98,13 @@ namespace thuglib {
                     direction = UP;
                     break;
                 }
-                location_.y += .5f*kPixelSize;
+                location_.y += speed * kPixelSize;
                 break;
             }
         }
     }
-}  // namespace thuglib
+
+    double Mob::GetDamage() {
+        return damage_;
+    }
+}  // namespace terrain

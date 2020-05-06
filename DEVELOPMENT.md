@@ -5,9 +5,9 @@
 
   - Added FastNoise library to project for terrain generation.
   - TODO:
-    - Add OpenGL to project, create basic map_ visual.
-    - Learn how FastNoise generates noise_.
-    - Add noise_ to basic visual, color code based off of pixel color.
+    - [x] Add OpenGL to project, create basic map visual.
+    - [x] Learn how FastNoise generates noise.
+    - [x] Add noise to basic visual, color code based off of pixel color.
 
 - <i> 4/19/20 </i>
 
@@ -15,7 +15,7 @@
   - Experimented with different RGB values and good float cutoff values to generate hills and lakes.
   - TODO:
     - [x] Further experiment with constants for terrain generation.
-    - [x] Experiment with different types of noise_ for the best terrain.
+    - [x] Experiment with different types of noise for the best terrain.
     - [x] Add a character into the game that can "walk" around on the terrain.
     
   - Roadblocks
@@ -26,11 +26,11 @@
 - <i> 4/20/20 </i>
 
   - Made player able to walk around the terrain!
-  - Made a player class, with methods to get and update player location based on KeyEvent.
+  - Made a player class, with methods to get and update player location_ based on KeyEvent.
   - [X] Figured out bug when rendering player: needed to call DrawPlayer() first.
   - [X] Figured out how to optimize framerate when generating terrain
     - BREAKTHROUGH 4/21/20 1:12AM
-      - Figured out how to change the frequency of the noise_ by reading the lib's documentation.
+      - Figured out how to change the frequency of the noise by reading the lib's documentation.
       - From this, I figured I can increase the frequency and decrease the number of pixels by the same scale factor to get
       semi-detailed terrains with only a fifth of the actual pixels.
       - This strategy ended up working super well! Game framerate is playable, although I'll experiment with a few other settings, and the terrains are increasingly fun to 
@@ -72,7 +72,7 @@ and see if we can get player speed to vary depending on the current biome they'r
         - [x] Allow the player to pick up antidote ingredients
         - [x] Make the players' health go down from certain events (swimming, mobs, etc.)
         - [x] End the game if the player gets all of the ingredients, or if they run out of time.
-        - [ ] Set up "doctors" that can give hints on the nearest antidote locations.
+        - [x] Set up "doctors" that can give hints on the nearest antidote locations. (MAPS)
         
 - <i> 5/5/20 </i>
 
@@ -80,7 +80,7 @@ and see if we can get player speed to vary depending on the current biome they'r
     - TODO
         - [x] Use random seed as currentTime for making randomness, or use random c++ library instead of rand().
         - [x] Add MAPS (some sort of entity that can point the user in the right direction).
-        - [ ] (Maybe) Add mobs like zombies or something that can harm the player if the player walks into them.
+        - [x] (Maybe) Add mobs like zombies or something that can harm the player if the player walks into them.
         - [x] Clean up some magic numbers and other pieces of the code that could look nicer.
     - Added maps which point the user to the closest ingredient for 5 seconds.
         - As of right now, maps and ingredients belong only to the terrain, and are not in their own separate classes.
@@ -92,3 +92,9 @@ and see if we can get player speed to vary depending on the current biome they'r
     - Having an aggravating issue trying to add Mobs as their own class. May have to do the same thing as I am with ingredients and maps, and have them
     just as static members of the terrain instead of decomposing them as their own objects. Really frustrating, especially since the deadline is close and
     I practically have the project finalized.
+        - Issue resolved for now- putting the Mob.h contents into Terrain.h seems to be a workaround for the time being.
+        - [x] Issue fixed! Re-created Mob.h file, seems to be working smoothly for now.
+    - TODO
+        - [ ] Clean up code, add more comments and remove unnessecary / buggy fixes.
+        - [ ] Make beginning and end messages more descriptive.
+        - [ ] Add sound effects to game, perhaps make it slightly more interactive and/or interesting somehow before deadline.

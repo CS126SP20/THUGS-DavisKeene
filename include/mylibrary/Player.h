@@ -9,28 +9,28 @@
 #include "cinder/Vector.h"
 #include <vector>
 
-namespace thuglib {
+namespace player {
 
     // Scale factor of how large the player is going to be
     const int kPlayerSize = 3;
 
     enum Direction {
-        LEFT, RIGHT, UP, DOWN
+        LEFT, RIGHT, UP, DOWN, NONE
     };
 
     class Player {
 
       private:
-        // Player's location
-        cinder::vec2 location;
+        // Player's location_
+        cinder::vec2 location_;
         // Player's health
-        float health;
+        double health_;
         // How fast the player traverses the map_, in pixels / second
         int player_speed_;
         bool is_moving_;
-        Direction playerDirection;
+        Direction player_direction_;
         // Player inventory, contains coordinates of antidotes discovered.
-        std::vector<cinder::vec2> inventory;
+        std::vector<cinder::vec2> inventory_;
       public:
         // Gets absolute player position
         cinder::vec2 GetLocation();
@@ -41,12 +41,13 @@ namespace thuglib {
         // Get inventory size
         int GetInventorySize();
         float GetHealth();
+        void DealDamage(double damage);
         bool IsMoving();
         // Speed increase / decrease
         void SetSpeed(double terrainValue);
         int GetSpeed();
         void ToggleMovement();
-        // Update player location based on what key was pressed
+        // Update player location_ based on what key was pressed
         void UpdateLocation();
         void SetDirection(Direction d);
         Direction GetDirection();

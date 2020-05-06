@@ -15,17 +15,17 @@ namespace thugapp {
 
 class THUGApp : public cinder::app::App {
     // Color constants
-    float kBlueThreshold = .150;
-    float kSandThreshold = .065;
+    float kBlueThreshold = .150f;
+    float kSandThreshold = .065f;
     // Sand
-    float kSandRed = 242/255.0;
-    float kSandGreen = 209/255.0;
-    float kSandBlue = 107/255.0;
+    float kSandRed = 242/255.0f;
+    float kSandGreen = 209/255.0f;
+    float kSandBlue = 107/255.0f;
     // Grass
-    float kGrassRedValue = 30/255.0;
-    float kGrassRedShift = 80/255.0;
-    float kGrassGreenRatio = (1/1.20);
-    float kGrassGreenDecayRatio = .85;
+    float kGrassRedValue = 30/255.0f;
+    float kGrassRedShift = 80/255.0f;
+    float kGrassGreenRatio = (1/1.20f);
+    float kGrassGreenDecayRatio = .85f;
 
 
  public:
@@ -39,7 +39,7 @@ class THUGApp : public cinder::app::App {
   // Respond to keys being pressed
   void keyDown(cinder::app::KeyEvent) override;
   // Person image
-    cinder::ImageSourceRef ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/man.png");
+    cinder::ImageSourceRef ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/man_2.png");
     cinder::gl::Texture2dRef icon = cinder::gl::Texture2d::create(ref);
     // Map image
     cinder::ImageSourceRef map_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/map.png");
@@ -69,7 +69,7 @@ private:
 
 private:
     // Terrain instance
-    thuglib::Terrain terrain;
+    terrain::Terrain terrain;
     // Size of the pixels on screen
     const size_t pixel_size_;
     // Stores last time the player moved one pixel
@@ -89,12 +89,13 @@ private:
     cinder::vec2 player_location_;
     cinder::Surface8u terrainSurface;
     bool new_chunk_;
-    thuglib::Player player_;
+    player::Player player_;
     bool draw_stats_;
     bool has_started_;
     bool game_won_;
     bool game_over_;
     bool show_hint_;
+    bool collision_;
     int image_index_ = 1;
 };
 

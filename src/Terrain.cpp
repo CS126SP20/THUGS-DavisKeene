@@ -5,10 +5,9 @@
 #include <iostream>
 #include <chrono>
 #include "mylibrary/Terrain.h"
-#include <mylibrary/Mob.h>
 #include <cinder/Rand.h>
 
-namespace thuglib {
+namespace terrain {
 
     void Terrain::GenerateTerrain() {
         for (int i = 0; i < kNumPixels; i++) {
@@ -64,17 +63,10 @@ namespace thuglib {
     }
 
     Terrain::Terrain() {
+        using std::chrono::system_clock;
         noise_.SetNoiseType(FastNoise::ValueFractal);
-        noise_.SetSeed(1337);
-        noise_.SetFrequency(.05f);
-    }
-
-    int Terrain::GetSeed() {
-        return seed_;
-    }
-
-    float Terrain::GetFrequency() {
-        return frequency_;
+        noise_.SetSeed(system_clock::now().time_since_epoch().count());
+        noise_.SetFrequency(.03f);
     }
 
     std::vector<cinder::vec2> Terrain::AntidoteInChunk(const cinder::vec2 &bounds) {
@@ -98,9 +90,6 @@ namespace thuglib {
             // Generate random number pair between 0 and kWorldBoundary
             antidoteLocations.emplace_back(rand() % kWorldBoundary, rand() % kWorldBoundary);
         }
-        for (cinder::vec2 location : antidoteLocations) {
-            std::cout << location << std::endl;
-        }
     }
 
     void Terrain::RemoveAntidote(const cinder::vec2& location) {
@@ -114,8 +103,8 @@ namespace thuglib {
     }
 
     double Terrain::GetDistanceToClosestAntidote(const cinder::vec2& location) {
-        // Get closest antidote to location
-        cinder::vec2 closest = *antidoteLocations.begin();
+        // Get closest antidote to location_
+        cinder::vec2 closest = antidoteLocations.at(0);
         double closest_d = sqrt((pow(closest.x - location.x, 2) + pow(closest.y - location.y, 2)));
         for (size_t i = 0; i < antidoteLocations.size(); i++) {
             cinder::vec2 temp_location = antidoteLocations.at(i);
@@ -123,7 +112,7 @@ namespace thuglib {
             double closest_distance = sqrt((pow(closest.x - location.x, 2) + pow(closest.y - location.y, 2)));
             if (temp_distance < closest_distance) {
                 closest = temp_location;
-                closest_d = closest_distance;
+                closest_d = temp_distance;
             }
         }
         return closest_d;
@@ -173,7 +162,6 @@ namespace thuglib {
                 mobs.push_back(m);
             }
         }
-        std::cout << "started" << std::endl;
     }
 
     bool Terrain::IsMobInChunk(Mob m, const cinder::vec2& bounds) {
@@ -183,26 +171,12 @@ namespace thuglib {
         return (mob_x == chunkBounds.x && mob_y == chunkBounds.y);
     }
 
-    std::vector<Mob> Terrain::GetMobsInChunk(const cinder::vec2& bounds) {
-        cinder::vec2 chunkBounds = GetChunkBounds(bounds); // Upper left bounds
-        std::vector<Mob> mobsInChunk;
-        for (Mob m : mobs) {
-            int map_x = m.GetLocation().x / kMapSize;
-            int map_y = m.GetLocation().y / kMapSize;
-            if (map_x == chunkBounds.x && map_y == chunkBounds.y) {
-                mobsInChunk.push_back(m);
-            }
-        }
-        return mobsInChunk;
-    }
-
-
     bool isOverlapping1D(cinder::vec2 box1, cinder::vec2 box2) {
         return box1.y > box2.x && box2.y > box1.x;
     }
 
-    bool Terrain::IsInRange(cinder::vec2 obj1, cinder::vec2 obj2,
-            int obj1size, int obj2size) {
+    bool Terrain::IsOverlapping(cinder::vec2 obj1, cinder::vec2 obj2,
+                                int obj1size, int obj2size) {
         cinder::vec2 playerLocationMax = {obj1.x + kPixelSize * obj1size, obj1.y + kPixelSize * obj1size};
         cinder::vec2 mobLocationEndMax = {obj2.x + kPixelSize * obj2size, obj2.y + kPixelSize * obj2size};
 

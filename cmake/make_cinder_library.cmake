@@ -11,7 +11,7 @@ function( ci_make_library )
     endif()
 
     if( NOT ARG_ASSETS_PATH )
-        # Set the default assets path to be in the standard app location (next to proj folder)
+        # Set the default assets path to be in the standard app location_ (next to proj folder)
         get_filename_component( ARG_ASSETS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../assets" ABSOLUTE )
     endif()
 
