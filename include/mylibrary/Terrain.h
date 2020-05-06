@@ -8,6 +8,8 @@
 #include <cinder/Vector.h>
 #include <vector>
 #include "FastNoise.h"
+#include "Player.h"
+#include <cinder/gl/gl.h>
 
 namespace thuglib {
     // Size of the map_, window is kMapSize x kMapSize pixels
@@ -28,7 +30,32 @@ namespace thuglib {
     // Number of maps, proportional to number of ingredients
     const int kNumMaps = kAntidoteIngredients * 5;
     // Number of mobs on map
-    const int kNumMobs = 10;
+    const int kNumMobs = 50;
+
+    const int kMobSize = 3;
+
+    class Mob {
+        cinder::ImageSourceRef zombie_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/zombie.png");
+        cinder::gl::Texture2dRef zombie_icon = cinder::gl::Texture2d::create(zombie_ref);
+
+        cinder::ImageSourceRef spider_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/spider.png");
+        cinder::gl::Texture2dRef spider_icon = cinder::gl::Texture2d::create(spider_ref);
+
+    public:
+        Mob(std::string name);
+        Mob(std::string name, cinder::vec2 location);
+        void Draw();
+        cinder::vec2 GetRelativePosition();
+        cinder::vec2 GetLocation();
+        void UpdateLocation();
+        Direction direction;
+
+    private:
+        std::string name_;
+        cinder::vec2 location_;
+        double damage_;
+        float speed;
+    };
 
     class Terrain {
     public:
@@ -62,9 +89,15 @@ namespace thuglib {
         // Remove maps from world
         void RemoveMap(const cinder::vec2& location);
         // Getters
+        std::vector<Mob> GetMobsInChunk(const cinder::vec2& bounds);
+        void GenerateMobs();
+        bool IsMobInChunk(Mob m, const glm::vec2 &bounds);
         int GetSeed();
         float GetFrequency();
 
+        bool IsInRange(cinder::vec2 obj1, cinder::vec2 obj2, int obj1size, int obj2size);
+
+        std::vector<Mob> mobs;
     private:
         // Our FastNoise object that we use to get the noise
         FastNoise noise_;
@@ -80,6 +113,7 @@ namespace thuglib {
         std::vector<cinder::vec2> antidoteLocations;
         std::vector<cinder::vec2> mapLocations;
     };
+
 } // namespace terrain
 
 #endif //FINALPROJECT_TERRAIN_H

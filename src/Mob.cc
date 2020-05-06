@@ -4,24 +4,31 @@
 #include <cinder/Vector.h>
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
+#include <mylibrary/Terrain.h>
+#include <random>
+
 
 using cinder::Rectf;
 
 namespace thuglib {
 
-    cinder::ImageSourceRef zombie_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/zombie.png");
-    cinder::gl::Texture2dRef zombie_icon = cinder::gl::Texture2d::create(zombie_ref);
-
-    cinder::ImageSourceRef spider_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/spider.png");
-    cinder::gl::Texture2dRef spider_icon = cinder::gl::Texture2d::create(spider_ref);
-
     Mob::Mob(string name) {
         name_ = name;
         using std::chrono::system_clock;
         int randomseed = system_clock::now().time_since_epoch().count();
-        std::srand(randomseed);
+//        std::srand(randomseed);
         // Put mob on map randomly
-        location_ = {rand() % kWorldBoundary, rand() % kWorldBoundary};
+        std::default_random_engine generator;
+        generator.seed(randomseed);
+        std::uniform_int_distribution<int> distribution(0, kWorldBoundary/kPixelSize);
+        location_ = {distribution(generator) * kPixelSize, distribution(generator) * kPixelSize};
+        if (name == "spider") {
+            direction = RIGHT;
+            speed = 1.0f;
+        } else {
+            direction = UP;
+            speed = .5f;
+        };
     }
 
     Mob::Mob(string name, cinder::vec2 location) {
@@ -44,12 +51,53 @@ namespace thuglib {
                                                 kPixelSize * (pos.x) + kMobSize * kPixelSize, // Make antidote ingredient same size as player
                                                 kPixelSize * (pos.y) + kMobSize * kPixelSize));
         }
-
     }
 
     cinder::vec2 Mob::GetRelativePosition() {
         int relative_x = ((int) location_.x % kMapSize) / kPixelSize;
         int relative_y = ((int) location_.y % kMapSize) / kPixelSize;
         return {relative_x, relative_y};
+    }
+
+    cinder::vec2 Mob::GetLocation() {
+        return location_;
+    }
+
+    void Mob::UpdateLocation() {
+        // Zombies move horizontally, spiders move vertically.
+        switch(direction) {
+            case LEFT: {
+                if (location_.x < 0) {
+                    direction = RIGHT;
+                    break;
+                }
+                location_.x -= .5f*kPixelSize;
+                break;
+            }
+            case RIGHT: {
+                if (location_.x > kWorldBoundary - (kPixelSize * kMobSize)) { // Since location is measured from the top left block
+                    direction = LEFT;
+                    break;
+                }
+                location_.x += .5f*kPixelSize;
+                break;
+            }
+            case UP: {
+                if (location_.y < 0) {
+                    direction = DOWN;
+                    break;
+                }
+                location_.y -= .5f*kPixelSize;
+                break;
+            }
+            case DOWN: {
+                if (location_.y > kWorldBoundary - (kPixelSize * kMobSize) ) {
+                    direction = UP;
+                    break;
+                }
+                location_.y += .5f*kPixelSize;
+                break;
+            }
+        }
     }
 }  // namespace thuglib

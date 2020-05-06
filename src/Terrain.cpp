@@ -6,6 +6,7 @@
 #include <chrono>
 #include "mylibrary/Terrain.h"
 #include <mylibrary/Mob.h>
+#include <cinder/Rand.h>
 
 namespace thuglib {
 
@@ -161,14 +162,52 @@ namespace thuglib {
         }
     }
 
-//    void Terrain::GenerateMobs() {
-//        for (int i = 0; i < kNumMobs; i++) {
-//            Mob m("spider");
-//            mobs.push_back(m);
-//        }
-//    }
-//
-//    std::vector<Mob> Terrain::GetMobs() {
-//        return mobs;
-//    }
+    void Terrain::GenerateMobs() {
+        for (int i = 0; i < kNumMobs; i++) {
+            float rand = cinder::randFloat();
+            if (rand < .5) {
+                Mob m("spider");
+                mobs.push_back(m);
+            } else {
+                Mob m("zombie");
+                mobs.push_back(m);
+            }
+        }
+        std::cout << "started" << std::endl;
+    }
+
+    bool Terrain::IsMobInChunk(Mob m, const cinder::vec2& bounds) {
+        cinder::vec2 chunkBounds = GetChunkBounds(bounds); // Upper left bounds
+        int mob_x = m.GetLocation().x / kMapSize;
+        int mob_y = m.GetLocation().y / kMapSize;
+        return (mob_x == chunkBounds.x && mob_y == chunkBounds.y);
+    }
+
+    std::vector<Mob> Terrain::GetMobsInChunk(const cinder::vec2& bounds) {
+        cinder::vec2 chunkBounds = GetChunkBounds(bounds); // Upper left bounds
+        std::vector<Mob> mobsInChunk;
+        for (Mob m : mobs) {
+            int map_x = m.GetLocation().x / kMapSize;
+            int map_y = m.GetLocation().y / kMapSize;
+            if (map_x == chunkBounds.x && map_y == chunkBounds.y) {
+                mobsInChunk.push_back(m);
+            }
+        }
+        return mobsInChunk;
+    }
+
+
+    bool isOverlapping1D(cinder::vec2 box1, cinder::vec2 box2) {
+        return box1.y > box2.x && box2.y > box1.x;
+    }
+
+    bool Terrain::IsInRange(cinder::vec2 obj1, cinder::vec2 obj2,
+            int obj1size, int obj2size) {
+        cinder::vec2 playerLocationMax = {obj1.x + kPixelSize * obj1size, obj1.y + kPixelSize * obj1size};
+        cinder::vec2 mobLocationEndMax = {obj2.x + kPixelSize * obj2size, obj2.y + kPixelSize * obj2size};
+
+        // Check for any overlap from the northwest to southeast coordinates.
+        return (isOverlapping1D({obj1.x, playerLocationMax.x}, {obj2.x, mobLocationEndMax.x}) &&
+                isOverlapping1D({obj1.y, playerLocationMax.y}, {obj2.y, mobLocationEndMax.y}));
+    }
 }

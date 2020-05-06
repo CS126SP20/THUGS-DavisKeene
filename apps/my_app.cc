@@ -96,7 +96,15 @@ void THUGApp::update() {
     if (player_.IsMoving() && time - last_time_ > std::chrono::milliseconds(player_.GetSpeed())) {
         player_.UpdateLocation();
         last_time_ = time;
+        for (Mob &m : terrain.mobs) {
+            m.UpdateLocation();
+            if (terrain.IsInRange(player_.GetLocation(), m.GetLocation(),
+                    kPlayerSize, kMobSize)) {
+                std::cout << "Collision detected!" << std::endl;
+            }
+        }
     }
+
     using std::chrono::milliseconds;
     const double elapsed_time =
             duration_cast<milliseconds>(system_clock::now() - start_time_)
@@ -137,7 +145,7 @@ void THUGApp::draw() {
             ss << "Closest ingredient is " << terrain.GetDistanceToClosestAntidote(player_.GetLocation()) << " blocks away.";
             PrintText(ss.str(), Color::white(), {250, 50}, {0, 0});
         }
-        // DrawMobs();
+        DrawMobs();
         DrawAntidotes();
         DrawMaps();
         DrawGameStats();
@@ -171,7 +179,7 @@ void THUGApp::keyDown(KeyEvent event) {
         has_started_ = !has_started_;
         terrain.GenerateAntidotes();
         terrain.GenerateMaps();
-        // terrain.GenerateMobs();
+        terrain.GenerateMobs();
         start_time_ = system_clock::now();
     }
     Direction d = KeyToDirection(event);
@@ -257,8 +265,8 @@ void THUGApp::DrawAntidotes() {
     for (cinder::vec2 antidote_location : antidote_locations) {
         int relative_x = ((int) antidote_location.x % kMapSize) / kPixelSize;
         int relative_y = ((int) antidote_location.y % kMapSize) / kPixelSize;
-        if (player_.GetRelativePosition().x == relative_x &&
-        player_.GetRelativePosition().y == relative_y) {
+        if (terrain.IsInRange(player_.GetLocation(), antidote_location,
+                kPlayerSize, kPlayerSize)) {
             terrain.RemoveAntidote(antidote_location);
             player_.AddToInventory(antidote_location);
             image_index_ = (image_index_ + 1) % 4;
@@ -315,8 +323,8 @@ void THUGApp::DrawMaps() {
     for (cinder::vec2 map_location : map_locations) {
         int relative_x = ((int) map_location.x % kMapSize) / kPixelSize;
         int relative_y = ((int) map_location.y % kMapSize) / kPixelSize;
-        if (player_.GetRelativePosition().x == relative_x &&
-            player_.GetRelativePosition().y == relative_y) {
+        if (terrain.IsInRange(player_.GetLocation(), map_location,
+                kPlayerSize, kPlayerSize)) {
             terrain.RemoveMap(map_location);
             show_hint_ = true;
             hint_start_time_ = system_clock::now();
@@ -330,10 +338,13 @@ void THUGApp::DrawMaps() {
     }
 }
 
-//    void THUGApp::DrawMobs() {
-//        for (Mob m : terrain.GetMobs()) {
-//            m.Draw();
-//        }
-//    }
+void THUGApp::DrawMobs() {
+    for (Mob &m : terrain.mobs) {
+//        std::cout << m.GetLocation() << std::endl;
+        if (terrain.IsMobInChunk(m, player_.GetLocation())) {
+            m.Draw();
+        }
+    }
+}
 
 }  // namespace thugapp

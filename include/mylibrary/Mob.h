@@ -9,24 +9,24 @@
 #include <cinder/gl/gl.h>
 
 using std::string;
-
 namespace thuglib {
 
-    // Size of mobs on screen, in pixels
-    const int kMobSize = 3;
-
-    class Mob {
-        public:
-            Mob(string name);
-            Mob(string name, cinder::vec2 location);
-            void Draw();
-            cinder::vec2 GetRelativePosition();
-
-        private:
-            string name_;
-            cinder::vec2 location_;
-            double damage_;
-    };
+//    // Size of mobs on screen, in pixels
+//    const int kMobSize = 3;
+//
+//    class Mob {
+//        public:
+//            Mob(string name);
+//            Mob(string name, cinder::vec2 location);
+//            void Draw();
+//            cinder::vec2 GetRelativePosition();
+//            cinder::vec2 GetLocation();
+//
+//        private:
+//            string name_;
+//            cinder::vec2 location_;
+//            double damage_;
+//    };
 
 }  // namespace thuglib
 
