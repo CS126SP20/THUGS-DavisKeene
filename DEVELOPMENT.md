@@ -78,7 +78,11 @@ and see if we can get player speed to vary depending on the current biome they'r
 
     - Finished everything from 5/4/20 Checklist aside from adding doctors.
     - TODO
-        - [ ] Use random seed as currentTime for making randomness, or use random c++ library instead of rand().
-        - [ ] Add doctors / hospitals / some sort of entity that can point the user in the right direction.
+        - [x] Use random seed as currentTime for making randomness, or use random c++ library instead of rand().
+        - [x] Add MAPS (some sort of entity that can point the user in the right direction).
         - [ ] (Maybe) Add mobs like zombies or something that can harm the player if the player walks into them.
-        - [ ] Clean up some magic numbers and other pieces of the code that could look nicer.
+        - [x] Clean up some magic numbers and other pieces of the code that could look nicer.
+    - Added maps which point the user to the closest ingredient for 5 seconds.
+        - As of right now, maps and ingredients belong only to the terrain, and are not in their own separate classes.
+        I'll probably fix this later, assuming I have time. Otherwise, I think it's still logical for these items to be
+        a part of the terrain because they are objects that spawn on the terrain only.

@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <mylibrary/Player.h>
+#include <chrono>
 #include "mylibrary/Terrain.h"
 namespace thuglib {
 
@@ -89,7 +90,8 @@ namespace thuglib {
 
     void Terrain::GenerateAntidotes() {
         for (int i = 0; i < kAntidoteIngredients; i++) {
-            int randomseed = rand() % 100;
+            using std::chrono::system_clock;
+            int randomseed = system_clock::now().time_since_epoch().count();
             std::srand(randomseed);
             // Generate random number pair between 0 and kWorldBoundary
             antidoteLocations.emplace_back(rand() % kWorldBoundary, rand() % kWorldBoundary);
@@ -104,6 +106,55 @@ namespace thuglib {
             cinder::vec2 temp_location = antidoteLocations.at(i);
             if (temp_location == location) {
                 antidoteLocations.erase(antidoteLocations.begin()+(int) i);
+                return;
+            }
+        }
+    }
+
+    double Terrain::GetDistanceToClosestAntidote(const cinder::vec2& location) {
+        // Get closest antidote to location
+        cinder::vec2 closest = *antidoteLocations.begin();
+        double closest_d = sqrt((pow(closest.x - location.x, 2) + pow(closest.y - location.y, 2)));
+        for (size_t i = 0; i < antidoteLocations.size(); i++) {
+            cinder::vec2 temp_location = antidoteLocations.at(i);
+            double temp_distance = sqrt((pow(temp_location.x - location.x, 2) + pow(temp_location.y - location.y, 2)));
+            double closest_distance = sqrt((pow(closest.x - location.x, 2) + pow(closest.y - location.y, 2)));
+            if (temp_distance < closest_distance) {
+                closest = temp_location;
+                closest_d = closest_distance;
+            }
+        }
+        return closest_d;
+    }
+
+    void Terrain::GenerateMaps() {
+        for (int i = 0; i < kNumMaps; i++) {
+            using std::chrono::system_clock;
+            int randomseed = system_clock::now().time_since_epoch().count();
+            std::srand(randomseed);
+            // Generate random number pair between 0 and kWorldBoundary
+            mapLocations.emplace_back(rand() % kWorldBoundary, rand() % kWorldBoundary);
+        }
+    }
+
+    std::vector<cinder::vec2> Terrain::MapsInChunk(const cinder::vec2 &bounds) {
+        cinder::vec2 chunkBounds = GetChunkBounds(bounds); // Upper left bounds
+        std::vector<cinder::vec2> maps;
+        for (cinder::vec2 location : mapLocations) {
+            int map_x = location.x / kMapSize;
+            int map_y = location.y / kMapSize;
+            if (map_x == chunkBounds.x && map_y == chunkBounds.y) {
+                maps.push_back(location);
+            }
+        }
+        return maps;
+    }
+
+    void Terrain::RemoveMap(const cinder::vec2 &location) {
+        for (size_t i = 0; i < mapLocations.size(); i++) {
+            cinder::vec2 temp_location = mapLocations.at(i);
+            if (temp_location == location) {
+                mapLocations.erase(mapLocations.begin()+(int) i);
                 return;
             }
         }

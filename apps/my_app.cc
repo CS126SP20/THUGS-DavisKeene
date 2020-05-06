@@ -48,6 +48,47 @@ void THUGApp::setup() {
     cinder::gl::enableDepthRead();
 }
 
+// Code below derived from: CS126-SnakeApp
+template <typename C>
+void PrintText(const string& text, const C& color, const cinder::ivec2& size,
+               const cinder::vec2& loc) {
+    cinder::gl::color(color);
+
+    auto box = TextBox()
+            .alignment(TextBox::CENTER)
+            .font(cinder::Font(kNormalFont, 15))
+            .size(size)
+            .color(color)
+            .backgroundColor(ColorA(0, 0, 0))
+            .text(text);
+
+    const auto box_size = box.getSize();
+    const cinder::vec2 locp = {loc.x, loc.y};
+    const auto surface = box.render();
+    const auto texture = cinder::gl::Texture::create(surface);
+    cinder::gl::draw(texture, locp);
+}
+
+template <typename C>
+void PrintTextMenu(const string& text, const C& color, const cinder::ivec2& size,
+                   const cinder::vec2& loc) {
+    cinder::gl::color(color);
+
+    auto box = TextBox()
+            .alignment(TextBox::CENTER)
+            .font(cinder::Font(kNormalFont, 20))
+            .size(size)
+            .color(color)
+            .backgroundColor(ColorA(0, 0, 0, 0))
+            .text(text);
+
+    const auto box_size = box.getSize();
+    const cinder::vec2 locp = {loc.x - box_size.x / 2, loc.y - box_size.y / 2};
+    const auto surface = box.render();
+    const auto texture = cinder::gl::Texture::create(surface);
+    cinder::gl::draw(texture, locp);
+}
+
 void THUGApp::update() {
     const auto time = system_clock::now();
     double terrainValue = terrain.GetValue(player_.GetRelativePosition().x, player_.GetRelativePosition().y);
@@ -69,6 +110,11 @@ void THUGApp::update() {
                  .count()/1000 == 0) || game_won_) {
         game_over_ = true;
     }
+    if (show_hint_) {
+        if (duration_cast<milliseconds>(system_clock::now() - hint_start_time_).count() > 5000) {
+            show_hint_ = false;
+        }
+    }
 }
 
 void THUGApp::draw() {
@@ -83,7 +129,13 @@ void THUGApp::draw() {
         DrawGameOver();
     } else {
         DrawPlayer();
+        if (show_hint_) {
+            std::stringstream ss;
+            ss << "Closest ingredient is " << terrain.GetDistanceToClosestAntidote(player_.GetLocation()) << " blocks away.";
+            PrintText(ss.str(), Color::white(), {250, 250}, {0, 0});
+        }
         DrawAntidotes();
+        DrawMaps();
         DrawGameStats();
         DrawTerrain();
     }
@@ -114,6 +166,7 @@ void THUGApp::keyDown(KeyEvent event) {
     if (!has_started_) {
         has_started_ = !has_started_;
         terrain.GenerateAntidotes();
+        terrain.GenerateMaps();
         start_time_ = system_clock::now();
     }
     Direction d = KeyToDirection(event);
@@ -156,47 +209,6 @@ void THUGApp::DrawPlayer() {
                                      ((int) location.y % kMapSize) + kPlayerSize * pixel_size_));
 }
 
-// Code below derived from: CS126-SnakeApp
-template <typename C>
-void PrintText(const string& text, const C& color, const cinder::ivec2& size,
-               const cinder::vec2& loc) {
-    cinder::gl::color(color);
-
-    auto box = TextBox()
-            .alignment(TextBox::CENTER)
-            .font(cinder::Font(kNormalFont, 15))
-            .size(size)
-            .color(color)
-            .backgroundColor(ColorA(0, 0, 0))
-            .text(text);
-
-    const auto box_size = box.getSize();
-    const cinder::vec2 locp = {loc.x, loc.y};
-    const auto surface = box.render();
-    const auto texture = cinder::gl::Texture::create(surface);
-    cinder::gl::draw(texture, locp);
-}
-
-template <typename C>
-void PrintTextMenu(const string& text, const C& color, const cinder::ivec2& size,
-               const cinder::vec2& loc) {
-    cinder::gl::color(color);
-
-    auto box = TextBox()
-            .alignment(TextBox::CENTER)
-            .font(cinder::Font(kNormalFont, 20))
-            .size(size)
-            .color(color)
-            .backgroundColor(ColorA(0, 0, 0, 0))
-            .text(text);
-
-    const auto box_size = box.getSize();
-    const cinder::vec2 locp = {loc.x - box_size.x / 2, loc.y - box_size.y / 2};
-    const auto surface = box.render();
-    const auto texture = cinder::gl::Texture::create(surface);
-    cinder::gl::draw(texture, locp);
-}
-
 void THUGApp::DrawGameStats() {
     if (draw_stats_) {
         using std::chrono::milliseconds;
@@ -210,9 +222,7 @@ void THUGApp::DrawGameStats() {
         << "Coordinates:\n ("
         << coords.x << ", " << coords.y << ")\n"
         << "Health: "
-        << player_.GetHealth() << "\n"
-        << "Current Block Value: "
-        << terrain.GetValue(location.x, location.y)
+        << player_.GetHealth()
         << "\nCurrent Speed:\n"
         << player_.GetSpeed()
         << "\nTime Left\n"
@@ -246,10 +256,10 @@ void THUGApp::DrawAntidotes() {
         player_.GetRelativePosition().y == relative_y) {
             terrain.RemoveAntidote(antidote_location);
             player_.AddToInventory(antidote_location);
+            image_index_ = (image_index_ + 1) % 4;
         }
         // Get random antidote image
-        int random = rand() % 4;
-        cinder::ImageSourceRef a_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/antidote-1.png");
+        cinder::ImageSourceRef a_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/antidote-"+std::to_string(image_index_)+".png");
         cinder::gl::Texture2dRef a_icon = cinder::gl::Texture2d::create(a_ref);
         cinder::gl::color(rand() % 2, rand() % 2, rand() % 2);
         cinder::gl::draw(a_icon, Rectf(pixel_size_ * (relative_x),
@@ -271,20 +281,40 @@ void THUGApp::DrawGameOver() {
     }
 }
 
-    cinder::Color THUGApp::GetPixelColor(float value) {
-        if (value > kBlueThreshold) {
-            // Ocean
-            return Color(0, 0, 1 - value);
-        } else if (value < kBlueThreshold && value > kSandThreshold) {
-            // Sand
-            return (Color((1 - value) * kSandRed, (1 - value) * kSandGreen, (1 - value) * kSandBlue));
-        } else {
-            // Grass
-            float red = (world_decay_ * (kGrassRedValue) + kGrassRedValue);
-            float green = (1 - value) * (kGrassGreenRatio) -
-                    ((world_decay_*kGrassGreenDecayRatio) * (1 - value) * (kGrassGreenRatio));
-            return Color(red, green, 0);
-        }
+cinder::Color THUGApp::GetPixelColor(float value) {
+    if (value > kBlueThreshold) {
+        // Ocean
+        return Color(0, 0, 1 - value);
+    } else if (value < kBlueThreshold && value > kSandThreshold) {
+        // Sand
+        return (Color((1 - value) * kSandRed, (1 - value) * kSandGreen, (1 - value) * kSandBlue));
+    } else {
+        // Grass
+        float red = (world_decay_ * (kGrassRedValue) + kGrassRedValue);
+        float green = (1 - value) * (kGrassGreenRatio) -
+                ((world_decay_*kGrassGreenDecayRatio) * (1 - value) * (kGrassGreenRatio));
+        return Color(red, green, 0);
     }
+}
+
+void THUGApp::DrawMaps() {
+    std::vector<cinder::vec2> map_locations = terrain.MapsInChunk(player_.GetLocation());
+    for (cinder::vec2 map_location : map_locations) {
+        int relative_x = ((int) map_location.x % kMapSize) / kPixelSize;
+        int relative_y = ((int) map_location.y % kMapSize) / kPixelSize;
+        if (player_.GetRelativePosition().x == relative_x &&
+            player_.GetRelativePosition().y == relative_y) {
+            terrain.RemoveMap(map_location);
+            show_hint_ = true;
+            hint_start_time_ = system_clock::now();
+        }
+        // Get random antidote image
+        cinder::gl::color(rand() % 2, rand() % 2, rand() % 2);
+        cinder::gl::draw(map_icon, Rectf(pixel_size_ * (relative_x),
+                                       pixel_size_ * (relative_y),
+                                       pixel_size_ * (relative_x) + kPlayerSize * pixel_size_, // Make antidote ingredient same size as player
+                                       pixel_size_ * (relative_y) + kPlayerSize * pixel_size_));
+    }
+}
 
 }  // namespace thugapp

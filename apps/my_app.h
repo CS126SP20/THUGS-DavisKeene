@@ -38,6 +38,10 @@ class THUGApp : public cinder::app::App {
     cinder::ImageSourceRef ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/man.png");
     cinder::gl::Texture2dRef icon = cinder::gl::Texture2d::create(ref);
 
+    cinder::ImageSourceRef map_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/map.png");
+    cinder::gl::Texture2dRef map_icon = cinder::gl::Texture2d::create(map_ref);
+
+
 
 private:
     void DrawTerrain();
@@ -48,6 +52,7 @@ private:
     void DrawAntidotes();
     void ResetGame();
     void DrawGameOver();
+    void DrawMaps();
     cinder::Color GetPixelColor(float value);
 
 private:
@@ -55,7 +60,9 @@ private:
     const size_t pixel_size_;
     std::chrono::time_point<std::chrono::system_clock> last_time_;
     std::chrono::time_point<std::chrono::system_clock> start_time_;
+    std::chrono::time_point<std::chrono::system_clock> hint_start_time_;
     std::chrono::seconds world_end = std::chrono::seconds(60 * 5); // 5 minutes
+    std::chrono::seconds hint_end = std::chrono::seconds(5); // 5 seconds
     float world_decay_;
     const size_t entity_block_size_;
     cinder::vec2 player_location_;
@@ -66,6 +73,8 @@ private:
     bool has_started_;
     bool game_won_;
     bool game_over_;
+    bool show_hint_;
+    int image_index_ = 1;
 };
 
 }  // namespace thugapp

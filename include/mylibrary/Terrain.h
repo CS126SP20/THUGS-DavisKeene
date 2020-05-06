@@ -26,6 +26,8 @@ namespace thuglib {
     const int kWorldBoundary = 8000;
     // Number of antidote ingredients
     const int kAntidoteIngredients = 5;
+    // Number of maps, proportional to number of ingredients
+    const int kNumMaps = kAntidoteIngredients * 5;
 
     class Terrain {
       public:
@@ -50,6 +52,14 @@ namespace thuglib {
         std::vector<cinder::vec2> AntidoteInChunk(const cinder::vec2& bounds);
         // Removes an antidote given a location.
         void RemoveAntidote(const cinder::vec2& location);
+        // Gets closest antidote to a location
+        double GetDistanceToClosestAntidote(const cinder::vec2& location);
+        // Map methods
+        void GenerateMaps();
+        // Get all maps in a chunk
+        std::vector<cinder::vec2> MapsInChunk(const cinder::vec2& bounds);
+        // Remove maps from world
+        void RemoveMap(const cinder::vec2& location);
         // Getters
         int GetSeed();
         float GetFrequency();
@@ -67,6 +77,7 @@ namespace thuglib {
         float frequency_;
         // Antidote ingredient locations
         std::vector<cinder::vec2> antidoteLocations;
+        std::vector<cinder::vec2> mapLocations;
     };
 } // namespace terrain
 
