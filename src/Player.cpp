@@ -108,4 +108,10 @@ namespace player {
              health_ = 0;
          }
     }
+
+    void Player::Reset() {
+         location_ = {kSpawnX, kSpawnY};
+         health_ = 100;
+         inventory_.clear();
+    }
 }

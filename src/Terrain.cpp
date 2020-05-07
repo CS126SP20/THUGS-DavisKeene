@@ -33,7 +33,6 @@ namespace terrain {
 
     float Terrain::GetValue(int x, int y) {
         return map_[x][y];
-        // return noise_.GetNoise(x, y);
     }
 
     void Terrain::PrintTerrain() {
@@ -153,6 +152,7 @@ namespace terrain {
 
     void Terrain::GenerateMobs() {
         for (int i = 0; i < kNumMobs; i++) {
+            // Generate random mobs (either a zombie or a spider)
             float rand = cinder::randFloat();
             if (rand < .5) {
                 Mob m("spider");
@@ -171,6 +171,7 @@ namespace terrain {
         return (mob_x == chunkBounds.x && mob_y == chunkBounds.y);
     }
 
+    // Helper method for IsOverlapping, returns if two one dimensional lines overlap.
     bool isOverlapping1D(cinder::vec2 box1, cinder::vec2 box2) {
         return box1.y > box2.x && box2.y > box1.x;
     }
@@ -178,10 +179,18 @@ namespace terrain {
     bool Terrain::IsOverlapping(cinder::vec2 obj1, cinder::vec2 obj2,
                                 int obj1size, int obj2size) {
         cinder::vec2 playerLocationMax = {obj1.x + kPixelSize * obj1size, obj1.y + kPixelSize * obj1size};
-        cinder::vec2 mobLocationEndMax = {obj2.x + kPixelSize * obj2size, obj2.y + kPixelSize * obj2size};
+        cinder::vec2 mobLocationMax = {obj2.x + kPixelSize * obj2size, obj2.y + kPixelSize * obj2size};
 
-        // Check for any overlap from the northwest to southeast coordinates.
-        return (isOverlapping1D({obj1.x, playerLocationMax.x}, {obj2.x, mobLocationEndMax.x}) &&
-                isOverlapping1D({obj1.y, playerLocationMax.y}, {obj2.y, mobLocationEndMax.y}));
+        // See if the boxes overlap on both the x and the y axis
+        return (isOverlapping1D({obj1.x, playerLocationMax.x}, {obj2.x, mobLocationMax.x}) &&
+                isOverlapping1D({obj1.y, playerLocationMax.y}, {obj2.y, mobLocationMax.y}));
+    }
+
+    void Terrain::Reset() {
+        mapLocations.clear();
+        antidoteLocations.clear();
+        mobs.clear();
+
+
     }
 }

@@ -14,6 +14,7 @@ namespace player {
     // Scale factor of how large the player is going to be
     const int kPlayerSize = 3;
 
+    // Where is the player moving?
     enum Direction {
         LEFT, RIGHT, UP, DOWN, NONE
     };
@@ -27,7 +28,9 @@ namespace player {
         double health_;
         // How fast the player traverses the map_, in pixels / second
         int player_speed_;
+        // Is the player moving?
         bool is_moving_;
+        // Direction player is currently moving
         Direction player_direction_;
         // Player inventory, contains coordinates of antidotes discovered.
         std::vector<cinder::vec2> inventory_;
@@ -40,19 +43,28 @@ namespace player {
         void AddToInventory(cinder::vec2 antidote_location);
         // Get inventory size
         int GetInventorySize();
+        // Gets player health
         float GetHealth();
+        // Deals damage to player (subtracts from health)
         void DealDamage(double damage);
+        // Is the player currently moving?
         bool IsMoving();
         // Speed increase / decrease
         void SetSpeed(double terrainValue);
+        // Gets the players speed
         int GetSpeed();
+        // Starts / stops player from moving
         void ToggleMovement();
         // Update player location_ based on what key was pressed
         void UpdateLocation();
+        // Set player direction
         void SetDirection(Direction d);
+        // Get direction player is moving in
         Direction GetDirection();
         // Default constructor
         Player();
+        // Reset player
+        void Reset();
     };
 }
 

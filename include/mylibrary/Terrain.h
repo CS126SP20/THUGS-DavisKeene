@@ -71,6 +71,8 @@ namespace terrain {
         bool IsOverlapping(cinder::vec2 obj1, cinder::vec2 obj2, int obj1size, int obj2size);
         // Public vector containing mobs, so their locations can be updated in-game
         std::vector<Mob> mobs;
+        // Reset Terrain
+        void Reset();
 
     private:
         // Our FastNoise object that we use to get the noise

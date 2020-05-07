@@ -15,14 +15,14 @@ namespace terrain {
 
     Mob::Mob(string name) {
         name_ = name;
+        // Randomly generate mob location
         using std::chrono::system_clock;
         int randomseed = system_clock::now().time_since_epoch().count();
-//        std::srand(randomseed);
-        // Put mob on map randomly
         std::default_random_engine generator;
         generator.seed(randomseed);
         std::uniform_int_distribution<int> distribution(0, kWorldBoundary/kPixelSize);
         location_ = {distribution(generator) * kPixelSize, distribution(generator) * kPixelSize};
+        // Set constants based on name (either spider or zombie)
         if (name == "spider") {
             direction = RIGHT;
             speed = 1.0f;

@@ -10,7 +10,7 @@ using cinder::app::App;
 using cinder::app::RendererGl;
 
 
-namespace thugapp {
+namespace app {
 
 const int kSamples = 8;
 const int kWidth = 800;
@@ -21,10 +21,10 @@ void SetUp(App::Settings* settings) {
   settings->setTitle("THUGS: v.0.1");
 }
 
-}  // namespace thugapp
+}  // namespace app
 
 
 // This is a macro that runs the application.
-CINDER_APP(thugapp::THUGApp,
-           RendererGl(RendererGl::Options().msaa(thugapp::kSamples)),
-           thugapp::SetUp)
+CINDER_APP(app::THUGApp,
+           RendererGl(RendererGl::Options().msaa(app::kSamples)),
+           app::SetUp)

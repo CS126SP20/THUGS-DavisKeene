@@ -95,6 +95,8 @@ and see if we can get player speed to vary depending on the current biome they'r
         - Issue resolved for now- putting the Mob.h contents into Terrain.h seems to be a workaround for the time being.
         - [x] Issue fixed! Re-created Mob.h file, seems to be working smoothly for now.
     - TODO
-        - [ ] Clean up code, add more comments and remove unnessecary / buggy fixes.
-        - [ ] Make beginning and end messages more descriptive.
-        - [ ] Add sound effects to game, perhaps make it slightly more interactive and/or interesting somehow before deadline.
+        - [x] Clean up code, add more comments and remove unnessecary / buggy fixes.
+        - [x] Make beginning and end messages more descriptive.
+        - [x] Add sound effects to game, perhaps make it slightly more interactive and/or interesting somehow before deadline.
+    - Added everything I said I would, not much left to do for the project! Going to maybe clean up some visuals for the text boxes, but other than
+    that I think everything turned out as good as I wanted it to.

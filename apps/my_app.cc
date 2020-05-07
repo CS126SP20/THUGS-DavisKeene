@@ -11,7 +11,7 @@
 #include <mylibrary/Player.h>
 #include <mylibrary/Terrain.h>
 
-namespace thugapp {
+namespace app {
 
 using cinder::app::KeyEvent;
 using cinder::Color;
@@ -28,19 +28,13 @@ using namespace terrain;
 using namespace player;
 
 const char kNormalFont[] = "Arial Unicode MS";
-const char kBoldFont[] = "Arial Unicode MS";
-const char kDifferentFont[] = "Purisa";
 
 THUGApp::THUGApp()
     : terrain{},
       pixel_size_{kPixelSize},
-      entity_block_size_{10},
-      player_location_{kSpawnX, kSpawnY},
-      terrainSurface(800, 800, cinder::SurfaceChannelOrder::RGBA),
-      new_chunk_{true},
+      world_decay_{0.0},
       player_{},
       draw_stats_{false},
-      world_decay_{0.0},
       has_started_{false} {}
 
 void THUGApp::setup() {
@@ -48,6 +42,20 @@ void THUGApp::setup() {
     start_time_ = system_clock::now();
     cinder::gl::enableDepthWrite();
     cinder::gl::enableDepthRead();
+    // Setup sounds
+    cinder::audio::SourceFileRef src = cinder::audio::load(cinder::app::loadAsset("bg-music.mp3"));
+    bg_music_ = cinder::audio::Voice::create(src);
+    cinder::audio::SourceFileRef src_map = cinder::audio::load(cinder::app::loadAsset("map.mp3"));
+    map_noise_ = cinder::audio::Voice::create(src_map);
+    cinder::audio::SourceFileRef src_col = cinder::audio::load(cinder::app::loadAsset("hit.mp3"));
+    collision_noise_ = cinder::audio::Voice::create(src_col);
+    cinder::audio::SourceFileRef src_ing = cinder::audio::load(cinder::app::loadAsset("collect-ingredient.mp3"));
+    ingredient_noise_ = cinder::audio::Voice::create(src_ing);
+    cinder::audio::SourceFileRef src_win = cinder::audio::load(cinder::app::loadAsset("victory.mp3"));
+    victory_noise_ = cinder::audio::Voice::create(src_win);
+    cinder::audio::SourceFileRef src_loss = cinder::audio::load(cinder::app::loadAsset("loss.mp3"));
+    loss_noise_ = cinder::audio::Voice::create(src_loss);
+    bg_music_->start();
 }
 
 // Code below derived from: CS126-SnakeApp
@@ -95,16 +103,20 @@ void THUGApp::update() {
     const auto time = system_clock::now();
     double terrainValue = terrain.GetValue(player_.GetRelativePosition().x, player_.GetRelativePosition().y);
     player_.SetSpeed(terrainValue);
+    // If the player is moving, update their location.
     if (player_.IsMoving() && time - last_time_ > std::chrono::milliseconds(player_.GetSpeed())) {
         player_.UpdateLocation();
         last_time_ = time;
     }
+    // Update mob locations
     for (Mob &m : terrain.mobs) {
         m.UpdateLocation();
+        // If a mob contacts the player, deal damage
         if (terrain.IsOverlapping(player_.GetLocation(), m.GetLocation(),
                                   kPlayerSize, kMobSize)) {
             player_.DealDamage(m.GetDamage());
             collision_ = true;
+            collision_noise_->start();
         }
     }
 
@@ -114,6 +126,7 @@ void THUGApp::update() {
                     .count();
     const double countdown_time = milliseconds(world_end).count();
     const double percentage = elapsed_time / countdown_time;
+    // Set world decay only if the game is not over
     if (!game_over_) {
         world_decay_ = percentage;
     }
@@ -125,6 +138,12 @@ void THUGApp::update() {
             finish_time_ = system_clock::now();
         }
         game_over_ = true;
+        bg_music_->stop();
+        if (game_won_) {
+            victory_noise_->start();
+        } else {
+            loss_noise_->start();
+        }
     }
     // Showing the hint logic
     if (show_hint_) {
@@ -135,7 +154,7 @@ void THUGApp::update() {
 }
 
 void THUGApp::draw() {
-    // Have to fake transparency because of cinder drawing
+    // Clear background with color of tile the player is on to feign transparency
     cinder::vec2 location = player_.GetRelativePosition();
     float value = terrain.GetValue(location.x, location.y);
     if (collision_) {
@@ -166,6 +185,7 @@ void THUGApp::draw() {
     }
 }
 
+// Convert key pressed to a direction
 Direction KeyToDirection(const KeyEvent& event) {
     switch (event.getCode()) {
         case KeyEvent::KEY_LEFT : {
@@ -184,8 +204,8 @@ Direction KeyToDirection(const KeyEvent& event) {
 }
 
 void THUGApp::keyDown(KeyEvent event) {
-    if (event.getCode() == KeyEvent::KEY_KP_ENTER) {
-        THUGApp();
+    if (event.getCode() == KeyEvent::KEY_SPACE) {
+        ResetGame();
     }
 
     if (event.getCode() == KeyEvent::KEY_F1) {
@@ -193,6 +213,7 @@ void THUGApp::keyDown(KeyEvent event) {
         return;
     }
     if (!has_started_) {
+        // Start the game after any key has been pressed
         has_started_ = !has_started_;
         terrain.GenerateAntidotes();
         terrain.GenerateMaps();
@@ -203,6 +224,7 @@ void THUGApp::keyDown(KeyEvent event) {
     if (d == player_.GetDirection() || !player_.IsMoving()) {
         player_.ToggleMovement();
     }
+    // Set player movement after key is pressed
     player_.SetDirection(d);
 }
 
@@ -267,30 +289,37 @@ void THUGApp::DrawGameStats() {
 void THUGApp::DrawInstructions() {
     cinder::gl::clear(Color(0,0,0)); // Color screen black
     const cinder::vec2 center = getWindowCenter();
-    const cinder::ivec2 size = {500, 500};
+    const cinder::ivec2 size = {500, 650};
     const Color color = Color::white();
-    PrintTextMenu("Hello, and welcome to THUGS: The Half-baked Unimportant Game (Singleplayer). Think minecraft and terreria from a top-down view.\n\n"
-                  "The world is in danger! A deadly pathogen is killing the land, and it's up to you to stop it! You need to collect all 5 pieces of the antidote in order "
-                  "to save the land and the world! Be speedy, because you have 5 minutes to collect the pieces before the terrain dies forever!\n\n"
-                  "Antidote ingredients are scattered around the map, but are all visible among the terrain. Maps will also spawn around the map, and can tell you "
+    PrintTextMenu("Hello, and welcome to THUGS: The Half-baked Unimportant Game (Singleplayer), a procedurally generated campaign game.\n\n"
+                  "The world is in danger! A deadly zombie outbreak has killed most of the humans on earth, and now the virus has mutated and started to kill the land! You must "
+                  "collect ingredients left by scientists to make an antidote to save the people, the land and the world! Be speedy, because you have 4 minutes to collect the pieces before the terrain dies forever!\n\n"
+                  "Antidote ingredients are scattered around the world, but are all visible among the terrain. Guiding maps will also spawn around the terrain, and can tell you "
                   "which direction to go to get to the closest ingredient. If you fail to collect all 5 ingredients by the end of the game, you lose!\n\n"
+                  "Be careful of zombies and spiders, which constantly patrol the map. Running into one will cause your health to go down.\n\n"
+                  "CONTROLS: arrow keys to move (start / stop by double pressing), F1 to open and close your game stats.\n"
                   "Press any key to start your adventure.", color, size, center);
 }
 
 void THUGApp::DrawAntidotes() {
+    // Get all antidote locations in the player's current chunk
     std::vector<cinder::vec2> antidote_locations = terrain.AntidoteInChunk(player_.GetLocation());
+    // Draw each ingredient in player chunk
     for (cinder::vec2 antidote_location : antidote_locations) {
         int relative_x = ((int) antidote_location.x % kMapSize) / kPixelSize;
         int relative_y = ((int) antidote_location.y % kMapSize) / kPixelSize;
+        // If a player has collided with an ingredient, delete it and move it to player inventory
         if (terrain.IsOverlapping(player_.GetLocation(), antidote_location,
                                   kPlayerSize, kPlayerSize)) {
             terrain.RemoveAntidote(antidote_location);
             player_.AddToInventory(antidote_location);
-            image_index_ = (image_index_ + 1) % 4;
+            image_index_ = (image_index_ + 1) % (kAntidoteIngredients);
+            ingredient_noise_->start();
         }
-        // Get random antidote image
+        // Cycle through antidote images
         cinder::ImageSourceRef a_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/antidote-"+std::to_string(image_index_)+".png");
         cinder::gl::Texture2dRef a_icon = cinder::gl::Texture2d::create(a_ref);
+        // Make it sparkle
         cinder::gl::color(rand() % 2, rand() % 2, rand() % 2);
         cinder::gl::draw(a_icon, Rectf(pixel_size_ * (relative_x),
                                         pixel_size_ * (relative_y),
@@ -302,24 +331,26 @@ void THUGApp::DrawAntidotes() {
 void THUGApp::DrawGameOver() {
     cinder::gl::clear(Color(0,0,0)); // Color screen black
     const cinder::vec2 center = getWindowCenter();
-    const cinder::ivec2 size = {500, 250};
+    const cinder::ivec2 win_size = {500, 200};
+    const cinder::ivec2 lose_size = {500, 50};
     const Color color = Color::white();
     player_.SetDirection(NONE);
     if (game_won_) {
+        victory_noise_->start();
         world_decay_ = 0.0;
         std::stringstream ss;
         using std::chrono::milliseconds;
-        ss << "Congrats, you won!\n"
+        ss << "Congrats, you won! The earth is saved!\n"
         << "You gathered all ingredients in "
         << (duration_cast<milliseconds>((finish_time_ - start_time_))
                     .count()/1000)
         << " seconds!\n"
-        << "To play again, close the window and press play.";
-        PrintTextMenu(ss.str(), color, size, center);
+        << "To play again, press the space bar.";
+        PrintTextMenu(ss.str(), color, win_size, center);
     } else if (player_.GetHealth() == 0) {
-        PrintTextMenu("You died! Game over :(", color, size, center);
+        PrintTextMenu("You died! Game over :(\nPress space to play again!", color, lose_size, center);
     } else {
-        PrintTextMenu("You ran out of time! Game over :(", color, size, center);
+        PrintTextMenu("You ran out of time! Game over :(\nPress space to play again!", color, lose_size, center);
     }
 }
 
@@ -340,16 +371,21 @@ cinder::Color THUGApp::GetPixelColor(float value) {
 }
 
 void THUGApp::DrawMaps() {
+    // Get all maps in a player's chunk
     std::vector<cinder::vec2> map_locations = terrain.MapsInChunk(player_.GetLocation());
+    // Draw maps in player's chunk
     for (cinder::vec2 map_location : map_locations) {
         int relative_x = ((int) map_location.x % kMapSize) / kPixelSize;
         int relative_y = ((int) map_location.y % kMapSize) / kPixelSize;
+        // If a player has collided with a map, display hint and remove map
         if (terrain.IsOverlapping(player_.GetLocation(), map_location,
                                   kPlayerSize, kPlayerSize)) {
             terrain.RemoveMap(map_location);
             show_hint_ = true;
             hint_start_time_ = system_clock::now();
+            map_noise_->start();
         }
+        // Make it sparkle
         cinder::gl::color(rand() % 2, rand() % 2, rand() % 2);
         cinder::gl::draw(map_icon, Rectf(pixel_size_ * (relative_x),
                                        pixel_size_ * (relative_y),
@@ -366,4 +402,23 @@ void THUGApp::DrawMobs() {
     }
 }
 
-}  // namespace thugapp
+void THUGApp::ResetGame() {
+    // Reset terrain
+    terrain.Reset();
+    // Generate mobs, antidotes and maps
+    terrain.GenerateAntidotes();
+    terrain.GenerateMaps();
+    terrain.GenerateMobs();
+    // Reset player
+    player_.Reset();
+    // Reset app variables
+    start_time_ = system_clock::now();
+    world_decay_ = 0.0f;
+    game_over_ = false;
+    image_index_ = 1;
+    bg_music_->start();
+    loss_noise_->stop();
+    victory_noise_->stop();
+}
+
+}  // namespace app
