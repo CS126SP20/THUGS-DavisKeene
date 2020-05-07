@@ -174,7 +174,7 @@ void THUGApp::draw() {
         DrawPlayer();
         if (show_hint_) {
             std::stringstream ss;
-            ss << "Closest ingredient is " << terrain_.GetDistanceToClosestAntidote(player_.GetLocation()) << " blocks away.";
+            ss << "Closest ingredient is " << terrain_.GetDistanceToClosestAntidote(player_.GetLocation())/kPixelSize << " blocks away.";
             PrintText(ss.str(), Color::white(), {250, 50}, {0, 0});
         }
         DrawMobs();
@@ -272,7 +272,7 @@ void THUGApp::DrawGameStats() {
         // Build the string
         ss << "THUGS v.0.1\n"
         << "Coordinates:\n ("
-        << coords.x << ", " << coords.y << ")\n"
+        << coords.x/kPixelSize << ", " << coords.y/kPixelSize << ")\n"
         << "Health: "
         << player_.GetHealth()
         << "\nCurrent Speed:\n"
