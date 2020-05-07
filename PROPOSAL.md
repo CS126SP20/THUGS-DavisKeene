@@ -14,7 +14,9 @@ Since this is going to be created using Cinder, I figured that I should take adv
 easier on myself. One of the libraries I stumbled upon is libnoise, a library that produces all sorts of random noise, including Perlin Noise 
 (which is common in game design for procedural terrain).
 
-I also plan on using OpenGL for graphics processing.
+(Ended up going with FastNoise, a C++ Library for generating various noise types.)
+
+I also plan on using OpenGL (cinder::gl) for graphics processing.
 
 I'm currently using Ubuntu 16/19.04 (16 on my desktop, 19 on my laptop), and both libraries are compatible with my system. 
 

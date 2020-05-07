@@ -100,3 +100,14 @@ and see if we can get player speed to vary depending on the current biome they'r
         - [x] Add sound effects to game, perhaps make it slightly more interactive and/or interesting somehow before deadline.
     - Added everything I said I would, not much left to do for the project! Going to maybe clean up some visuals for the text boxes, but other than
     that I think everything turned out as good as I wanted it to.
+    
+Final Thoughts
+-
+I think that overall, this project turned out to be something that I'm proud of, but it's not nearly as ambitious as I would have liked. I 
+greatly overestimated how much time I would have towards the end of the school year to work on this, and I think that with more time and dedication I
+could have added additional features to this game that would make it stand out. Namely, I wanted to add an online multi-player aspect to this game, which I think
+would have been really challenging and rewarding, but I had to pivot and make a clear game objective instead.
+
+With that being said, it's common in computer science that CS students rarely know game design. That is, people who know how to program very rarely
+produce good and fun-to-play games. I don't think that this game is a "hit", but I think that I accomplished all my goals that I set out to learn in
+making this project: to learn more about procedural terrain generation, and to fully acquaint myself with C++.
