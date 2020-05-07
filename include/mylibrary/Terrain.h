@@ -69,10 +69,12 @@ namespace terrain {
         bool IsMobInChunk(Mob m, const glm::vec2 &bounds);
         // Checks to see if two objects on the map are overlapping.
         bool IsOverlapping(cinder::vec2 obj1, cinder::vec2 obj2, int obj1size, int obj2size);
-        // Public vector containing mobs, so their locations can be updated in-game
-        std::vector<Mob> mobs;
         // Reset Terrain
         void Reset();
+
+    public:
+        // Public vector containing mobs, so their locations can be updated in-game
+        std::vector<Mob> mobs_;
 
     private:
         // Our FastNoise object that we use to get the noise
@@ -86,9 +88,9 @@ namespace terrain {
         // Noise frequency
         float frequency_;
         // Antidote ingredient locations
-        std::vector<cinder::vec2> antidoteLocations;
+        std::vector<cinder::vec2> antidote_locations_;
         // Map locations
-        std::vector<cinder::vec2> mapLocations;
+        std::vector<cinder::vec2> map_locations_;
     };
 
 } // namespace terrain

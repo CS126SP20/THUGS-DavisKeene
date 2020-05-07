@@ -30,7 +30,7 @@ using namespace player;
 const char kNormalFont[] = "Arial Unicode MS";
 
 THUGApp::THUGApp()
-    : terrain{},
+    : terrain_{},
       pixel_size_{kPixelSize},
       world_decay_{0.0},
       player_{},
@@ -38,7 +38,7 @@ THUGApp::THUGApp()
       has_started_{false} {}
 
 void THUGApp::setup() {
-    terrain.GenerateTerrain();
+    terrain_.GenerateTerrain();
     start_time_ = system_clock::now();
     cinder::gl::enableDepthWrite();
     cinder::gl::enableDepthRead();
@@ -101,7 +101,7 @@ void PrintTextMenu(const string& text, const C& color, const cinder::ivec2& size
 
 void THUGApp::update() {
     const auto time = system_clock::now();
-    double terrainValue = terrain.GetValue(player_.GetRelativePosition().x, player_.GetRelativePosition().y);
+    double terrainValue = terrain_.GetValue(player_.GetRelativePosition().x, player_.GetRelativePosition().y);
     player_.SetSpeed(terrainValue);
     // If the player is moving, update their location.
     if (player_.IsMoving() && time - last_time_ > std::chrono::milliseconds(player_.GetSpeed())) {
@@ -109,11 +109,11 @@ void THUGApp::update() {
         last_time_ = time;
     }
     // Update mob locations
-    for (Mob &m : terrain.mobs) {
+    for (Mob &m : terrain_.mobs_) {
         m.UpdateLocation();
         // If a mob contacts the player, deal damage
-        if (terrain.IsOverlapping(player_.GetLocation(), m.GetLocation(),
-                                  kPlayerSize, kMobSize)) {
+        if (terrain_.IsOverlapping(player_.GetLocation(), m.GetLocation(),
+                                   kPlayerSize, kMobSize)) {
             player_.DealDamage(m.GetDamage());
             collision_ = true;
             collision_noise_->start();
@@ -124,7 +124,7 @@ void THUGApp::update() {
     const double elapsed_time =
             duration_cast<milliseconds>(system_clock::now() - start_time_)
                     .count();
-    const double countdown_time = milliseconds(world_end).count();
+    const double countdown_time = milliseconds(world_end_).count();
     const double percentage = elapsed_time / countdown_time;
     // Set world decay only if the game is not over
     if (!game_over_) {
@@ -132,7 +132,7 @@ void THUGApp::update() {
     }
     game_won_ = player_.GetInventorySize() == kAntidoteIngredients;
     // Check to see if the time is up, or if we have won the game
-    if ((duration_cast<milliseconds>(world_end - (system_clock::now() - start_time_))
+    if ((duration_cast<milliseconds>(world_end_ - (system_clock::now() - start_time_))
                  .count()/1000 == 0) || game_won_ || player_.GetHealth() == 0) {
         if (!game_over_) {
             finish_time_ = system_clock::now();
@@ -147,7 +147,7 @@ void THUGApp::update() {
     }
     // Showing the hint logic
     if (show_hint_) {
-        if (duration_cast<milliseconds>(system_clock::now() - hint_start_time_).count() > duration_cast<milliseconds>(hint_end).count()) {
+        if (duration_cast<milliseconds>(system_clock::now() - hint_start_time_).count() > duration_cast<milliseconds>(hint_end_).count()) {
             show_hint_ = false;
         }
     }
@@ -156,7 +156,7 @@ void THUGApp::update() {
 void THUGApp::draw() {
     // Clear background with color of tile the player is on to feign transparency
     cinder::vec2 location = player_.GetRelativePosition();
-    float value = terrain.GetValue(location.x, location.y);
+    float value = terrain_.GetValue(location.x, location.y);
     if (collision_) {
         cinder::gl::clear(Color(1,0,0));
         collision_ = false;
@@ -174,7 +174,7 @@ void THUGApp::draw() {
         DrawPlayer();
         if (show_hint_) {
             std::stringstream ss;
-            ss << "Closest ingredient is " << terrain.GetDistanceToClosestAntidote(player_.GetLocation()) << " blocks away.";
+            ss << "Closest ingredient is " << terrain_.GetDistanceToClosestAntidote(player_.GetLocation()) << " blocks away.";
             PrintText(ss.str(), Color::white(), {250, 50}, {0, 0});
         }
         DrawMobs();
@@ -215,9 +215,9 @@ void THUGApp::keyDown(KeyEvent event) {
     if (!has_started_) {
         // Start the game after any key has been pressed
         has_started_ = !has_started_;
-        terrain.GenerateAntidotes();
-        terrain.GenerateMaps();
-        terrain.GenerateMobs();
+        terrain_.GenerateAntidotes();
+        terrain_.GenerateMaps();
+        terrain_.GenerateMobs();
         start_time_ = system_clock::now();
     }
     Direction d = KeyToDirection(event);
@@ -229,8 +229,8 @@ void THUGApp::keyDown(KeyEvent event) {
 }
 
 void THUGApp::DrawTerrain() {
-    cinder::vec2 bounds = terrain.GetChunkBounds(player_.GetLocation());
-    terrain.GenerateTerrain(bounds);
+    cinder::vec2 bounds = terrain_.GetChunkBounds(player_.GetLocation());
+    terrain_.GenerateTerrain(bounds);
 
     int xstart = (int) bounds.x * kNumPixels;
     int ystart = (int) bounds.y * kNumPixels;
@@ -239,7 +239,7 @@ void THUGApp::DrawTerrain() {
 
     for (int x = xstart; x < xend; x++) {
         for (int y = ystart; y < yend; y++) {
-            float value = terrain.GetValue((x - xstart), (y - ystart));
+            float value = terrain_.GetValue((x - xstart), (y - ystart));
             // Change color based on value, to make mountains and rivers and stuff
             cinder::gl::color(GetPixelColor(value));
             cinder::gl::drawSolidRect(Rectf(pixel_size_ * (x - xstart),
@@ -255,7 +255,7 @@ void THUGApp::DrawPlayer() {
     cinder::vec2 location = player_.GetLocation();
     cinder::gl::color(Color::white());
     // Render player location_ based on window coordinates, so we have to use %
-    cinder::gl::draw(icon, Rectf( (int) location.x % kMapSize,
+    cinder::gl::draw(player_icon_, Rectf((int) location.x % kMapSize,
                                       (int) location.y % kMapSize,
                                      ((int) location.x % kMapSize) + kPlayerSize * pixel_size_,
                                      ((int) location.y % kMapSize) + kPlayerSize * pixel_size_));
@@ -278,7 +278,7 @@ void THUGApp::DrawGameStats() {
         << "\nCurrent Speed:\n"
         << player_.GetSpeed()
         << "\nTime Left\n"
-        << (duration_cast<milliseconds>(world_end - (system_clock::now() - start_time_))
+        << (duration_cast<milliseconds>(world_end_ - (system_clock::now() - start_time_))
                 .count()/1000)
                 << "\nIngredients Left\n"
                 <<kAntidoteIngredients - player_.GetInventorySize();
@@ -303,21 +303,21 @@ void THUGApp::DrawInstructions() {
 
 void THUGApp::DrawAntidotes() {
     // Get all antidote locations in the player's current chunk
-    std::vector<cinder::vec2> antidote_locations = terrain.AntidoteInChunk(player_.GetLocation());
+    std::vector<cinder::vec2> antidote_locations = terrain_.AntidoteInChunk(player_.GetLocation());
     // Draw each ingredient in player chunk
     for (cinder::vec2 antidote_location : antidote_locations) {
         int relative_x = ((int) antidote_location.x % kMapSize) / kPixelSize;
         int relative_y = ((int) antidote_location.y % kMapSize) / kPixelSize;
         // If a player has collided with an ingredient, delete it and move it to player inventory
-        if (terrain.IsOverlapping(player_.GetLocation(), antidote_location,
-                                  kPlayerSize, kPlayerSize)) {
-            terrain.RemoveAntidote(antidote_location);
+        if (terrain_.IsOverlapping(player_.GetLocation(), antidote_location,
+                                   kPlayerSize, kPlayerSize)) {
+            terrain_.RemoveAntidote(antidote_location);
             player_.AddToInventory(antidote_location);
             image_index_ = (image_index_ + 1) % (kAntidoteIngredients);
             ingredient_noise_->start();
         }
         // Cycle through antidote images
-        cinder::ImageSourceRef a_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/antidote-"+std::to_string(image_index_)+".png");
+        cinder::ImageSourceRef a_ref = cinder::loadImage(cinder::app::loadAsset("antidote-"+std::to_string(image_index_)+".png"));
         cinder::gl::Texture2dRef a_icon = cinder::gl::Texture2d::create(a_ref);
         // Make it sparkle
         cinder::gl::color(rand() % 2, rand() % 2, rand() % 2);
@@ -331,7 +331,7 @@ void THUGApp::DrawAntidotes() {
 void THUGApp::DrawGameOver() {
     cinder::gl::clear(Color(0,0,0)); // Color screen black
     const cinder::vec2 center = getWindowCenter();
-    const cinder::ivec2 win_size = {500, 200};
+    const cinder::ivec2 win_size = {500, 150};
     const cinder::ivec2 lose_size = {500, 50};
     const Color color = Color::white();
     player_.SetDirection(NONE);
@@ -372,22 +372,22 @@ cinder::Color THUGApp::GetPixelColor(float value) {
 
 void THUGApp::DrawMaps() {
     // Get all maps in a player's chunk
-    std::vector<cinder::vec2> map_locations = terrain.MapsInChunk(player_.GetLocation());
+    std::vector<cinder::vec2> map_locations = terrain_.MapsInChunk(player_.GetLocation());
     // Draw maps in player's chunk
     for (cinder::vec2 map_location : map_locations) {
         int relative_x = ((int) map_location.x % kMapSize) / kPixelSize;
         int relative_y = ((int) map_location.y % kMapSize) / kPixelSize;
         // If a player has collided with a map, display hint and remove map
-        if (terrain.IsOverlapping(player_.GetLocation(), map_location,
-                                  kPlayerSize, kPlayerSize)) {
-            terrain.RemoveMap(map_location);
+        if (terrain_.IsOverlapping(player_.GetLocation(), map_location,
+                                   kPlayerSize, kPlayerSize)) {
+            terrain_.RemoveMap(map_location);
             show_hint_ = true;
             hint_start_time_ = system_clock::now();
             map_noise_->start();
         }
         // Make it sparkle
         cinder::gl::color(rand() % 2, rand() % 2, rand() % 2);
-        cinder::gl::draw(map_icon, Rectf(pixel_size_ * (relative_x),
+        cinder::gl::draw(map_icon_, Rectf(pixel_size_ * (relative_x),
                                        pixel_size_ * (relative_y),
                                        pixel_size_ * (relative_x) + kPlayerSize * pixel_size_, // Make antidote ingredient same size as player
                                        pixel_size_ * (relative_y) + kPlayerSize * pixel_size_));
@@ -395,8 +395,8 @@ void THUGApp::DrawMaps() {
 }
 
 void THUGApp::DrawMobs() {
-    for (Mob &m : terrain.mobs) {
-        if (terrain.IsMobInChunk(m, player_.GetLocation())) {
+    for (Mob &m : terrain_.mobs_) {
+        if (terrain_.IsMobInChunk(m, player_.GetLocation())) {
             m.Draw();
         }
     }
@@ -404,11 +404,11 @@ void THUGApp::DrawMobs() {
 
 void THUGApp::ResetGame() {
     // Reset terrain
-    terrain.Reset();
+    terrain_.Reset();
     // Generate mobs, antidotes and maps
-    terrain.GenerateAntidotes();
-    terrain.GenerateMaps();
-    terrain.GenerateMobs();
+    terrain_.GenerateAntidotes();
+    terrain_.GenerateMaps();
+    terrain_.GenerateMobs();
     // Reset player
     player_.Reset();
     // Reset app variables

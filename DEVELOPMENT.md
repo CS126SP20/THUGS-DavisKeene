@@ -95,11 +95,14 @@ and see if we can get player speed to vary depending on the current biome they'r
         - Issue resolved for now- putting the Mob.h contents into Terrain.h seems to be a workaround for the time being.
         - [x] Issue fixed! Re-created Mob.h file, seems to be working smoothly for now.
     - TODO
-        - [x] Clean up code, add more comments and remove unnessecary / buggy fixes.
+        - [x] Clean up code, add more comments and remove unnecessary / buggy fixes.
         - [x] Make beginning and end messages more descriptive.
         - [x] Add sound effects to game, perhaps make it slightly more interactive and/or interesting somehow before deadline.
     - Added everything I said I would, not much left to do for the project! Going to maybe clean up some visuals for the text boxes, but other than
     that I think everything turned out as good as I wanted it to.
+    - To feign transparency, I'm clearing the screen with the same color as the tile that the player is currently supposed to be on. Once the player is drawn,
+    this makes them appear to be surrounded by the terrain, but the trade off is that mobs, ingredients and maps also have the same color background. I think it's a
+    better alternative than having the same solid background for all entities regardless of player location.
     
 Final Thoughts
 -

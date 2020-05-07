@@ -39,11 +39,11 @@ class THUGApp : public cinder::app::App {
   // Respond to keys being pressed
     void keyDown(cinder::app::KeyEvent) override;
   // Person image
-    cinder::ImageSourceRef ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/man_2.png");
-    cinder::gl::Texture2dRef icon = cinder::gl::Texture2d::create(ref);
+    cinder::ImageSourceRef ref = cinder::loadImage(cinder::app::loadAsset("man_2.png"));
+    cinder::gl::Texture2dRef player_icon_ = cinder::gl::Texture2d::create(ref);
     // Map image
-    cinder::ImageSourceRef map_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/map.png");
-    cinder::gl::Texture2dRef map_icon = cinder::gl::Texture2d::create(map_ref);
+    cinder::ImageSourceRef map_ref = cinder::loadImage(cinder::app::loadAsset("map.png"));
+    cinder::gl::Texture2dRef map_icon_ = cinder::gl::Texture2d::create(map_ref);
     // Restarts the game
     void ResetGame();
 
@@ -69,7 +69,7 @@ private:
 
 private:
     // Terrain instance
-    terrain::Terrain terrain;
+    terrain::Terrain terrain_;
     // Size of the pixels on screen
     const size_t pixel_size_;
     // Stores last time the player moved one pixel
@@ -81,9 +81,9 @@ private:
     // Time we finished in
     std::chrono::time_point<std::chrono::system_clock> finish_time_;
     // Constant time player needs to finish by
-    const std::chrono::seconds world_end = std::chrono::seconds(60 * 4); // 4 minutes
+    const std::chrono::seconds world_end_ = std::chrono::seconds(60 * 4); // 4 minutes
     // Constant number of seconds that the hint stays on screen
-    const std::chrono::seconds hint_end = std::chrono::seconds(5); // 5 seconds
+    const std::chrono::seconds hint_end_ = std::chrono::seconds(5); // 5 seconds
     // Sounds
     cinder::audio::VoiceRef bg_music_;
     cinder::audio::VoiceRef collision_noise_;

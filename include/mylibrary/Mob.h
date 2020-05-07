@@ -8,6 +8,7 @@
 #endif //FINALPROJECT_MOB_H
 #include <cinder/gl/gl.h>
 #include <mylibrary/Player.h>
+#include <cinder/app/AppBase.h>
 
 namespace terrain {
 
@@ -18,11 +19,11 @@ namespace terrain {
 
     class Mob {
         // Zombie image texture
-        cinder::ImageSourceRef zombie_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/zombie.png");
+        cinder::ImageSourceRef zombie_ref = cinder::loadImage(cinder::app::loadAsset("zombie.png"));
         cinder::gl::Texture2dRef zombie_icon = cinder::gl::Texture2d::create(zombie_ref);
 
         // Spider image texture
-        cinder::ImageSourceRef spider_ref = cinder::loadImage("/home/davis/Cinder/my-projects/final-project-daviskeene/assets/spider.png");
+        cinder::ImageSourceRef spider_ref = cinder::loadImage(cinder::app::loadAsset("spider.png"));
         cinder::gl::Texture2dRef spider_icon = cinder::gl::Texture2d::create(spider_ref);
 
     public:

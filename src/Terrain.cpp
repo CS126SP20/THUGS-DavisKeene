@@ -71,7 +71,7 @@ namespace terrain {
     std::vector<cinder::vec2> Terrain::AntidoteInChunk(const cinder::vec2 &bounds) {
         cinder::vec2 chunkBounds = GetChunkBounds(bounds); // Upper left bounds
         std::vector<cinder::vec2> antidoes;
-        for (cinder::vec2 location : antidoteLocations) {
+        for (cinder::vec2 location : antidote_locations_) {
             int antidote_x = location.x / kMapSize;
             int antidote_y = location.y / kMapSize;
             if (antidote_x == chunkBounds.x && antidote_y == chunkBounds.y) {
@@ -87,15 +87,15 @@ namespace terrain {
             int randomseed = system_clock::now().time_since_epoch().count();
             std::srand(randomseed);
             // Generate random number pair between 0 and kWorldBoundary
-            antidoteLocations.emplace_back(rand() % kWorldBoundary, rand() % kWorldBoundary);
+            antidote_locations_.emplace_back(rand() % kWorldBoundary, rand() % kWorldBoundary);
         }
     }
 
     void Terrain::RemoveAntidote(const cinder::vec2& location) {
-        for (size_t i = 0; i < antidoteLocations.size(); i++) {
-            cinder::vec2 temp_location = antidoteLocations.at(i);
+        for (size_t i = 0; i < antidote_locations_.size(); i++) {
+            cinder::vec2 temp_location = antidote_locations_.at(i);
             if (temp_location == location) {
-                antidoteLocations.erase(antidoteLocations.begin()+(int) i);
+                antidote_locations_.erase(antidote_locations_.begin() + (int) i);
                 return;
             }
         }
@@ -103,10 +103,10 @@ namespace terrain {
 
     double Terrain::GetDistanceToClosestAntidote(const cinder::vec2& location) {
         // Get closest antidote to location_
-        cinder::vec2 closest = antidoteLocations.at(0);
+        cinder::vec2 closest = antidote_locations_.at(0);
         double closest_d = sqrt((pow(closest.x - location.x, 2) + pow(closest.y - location.y, 2)));
-        for (size_t i = 0; i < antidoteLocations.size(); i++) {
-            cinder::vec2 temp_location = antidoteLocations.at(i);
+        for (size_t i = 0; i < antidote_locations_.size(); i++) {
+            cinder::vec2 temp_location = antidote_locations_.at(i);
             double temp_distance = sqrt((pow(temp_location.x - location.x, 2) + pow(temp_location.y - location.y, 2)));
             double closest_distance = sqrt((pow(closest.x - location.x, 2) + pow(closest.y - location.y, 2)));
             if (temp_distance < closest_distance) {
@@ -123,14 +123,14 @@ namespace terrain {
             int randomseed = system_clock::now().time_since_epoch().count();
             std::srand(randomseed);
             // Generate random number pair between 0 and kWorldBoundary
-            mapLocations.emplace_back(rand() % kWorldBoundary, rand() % kWorldBoundary);
+            map_locations_.emplace_back(rand() % kWorldBoundary, rand() % kWorldBoundary);
         }
     }
 
     std::vector<cinder::vec2> Terrain::MapsInChunk(const cinder::vec2 &bounds) {
         cinder::vec2 chunkBounds = GetChunkBounds(bounds); // Upper left bounds
         std::vector<cinder::vec2> maps;
-        for (cinder::vec2 location : mapLocations) {
+        for (cinder::vec2 location : map_locations_) {
             int map_x = location.x / kMapSize;
             int map_y = location.y / kMapSize;
             if (map_x == chunkBounds.x && map_y == chunkBounds.y) {
@@ -141,10 +141,10 @@ namespace terrain {
     }
 
     void Terrain::RemoveMap(const cinder::vec2 &location) {
-        for (size_t i = 0; i < mapLocations.size(); i++) {
-            cinder::vec2 temp_location = mapLocations.at(i);
+        for (size_t i = 0; i < map_locations_.size(); i++) {
+            cinder::vec2 temp_location = map_locations_.at(i);
             if (temp_location == location) {
-                mapLocations.erase(mapLocations.begin()+(int) i);
+                map_locations_.erase(map_locations_.begin() + (int) i);
                 return;
             }
         }
@@ -156,10 +156,10 @@ namespace terrain {
             float rand = cinder::randFloat();
             if (rand < .5) {
                 Mob m("spider");
-                mobs.push_back(m);
+                mobs_.push_back(m);
             } else {
                 Mob m("zombie");
-                mobs.push_back(m);
+                mobs_.push_back(m);
             }
         }
     }
@@ -187,9 +187,9 @@ namespace terrain {
     }
 
     void Terrain::Reset() {
-        mapLocations.clear();
-        antidoteLocations.clear();
-        mobs.clear();
+        map_locations_.clear();
+        antidote_locations_.clear();
+        mobs_.clear();
 
 
     }
